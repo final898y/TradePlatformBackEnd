@@ -1,8 +1,8 @@
 import { ResultSetHeader } from 'mysql2/promise';
-import { User } from '../model/userModel';
-import * as mysqlHelper from '../helpers/mysqlHelper';
-import { Hashdata } from '../utility/hashData';
-import { ValidateUserPartial } from '../utility/validateData';
+import { User } from '../model/userModel.js';
+import * as mysqlHelper from '../helpers/mysqlHelper.js';
+import { Hashdata } from '../utility/hashData.js';
+import { ValidateUserPartial } from '../utility/validateData.js';
 
 async function GetAllUsers(): Promise<object[]> {
   return await mysqlHelper.SelectQuery('User');

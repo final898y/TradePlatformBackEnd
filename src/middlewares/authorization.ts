@@ -1,5 +1,5 @@
 import { Request, Response,NextFunction} from 'express';
-import * as JwtHelper from '../helpers/jwtHelper'
+import * as JwtHelper from '../helpers/jwtHelper.js'
 
 async function authenticateToken(req:Request, res:Response, next:NextFunction) {
     if(req.headers.authorization){

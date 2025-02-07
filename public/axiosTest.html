@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple HTML with Express</title>
+</head>
+<body>
+  <h1>Welcome to Express without a View Engine</h1>
+  <p class="returndata">This is a simple HTML page served by Express.</p>
+  <ul id="queryinfo"></ul>
+  <input type="button" value="測試" class="testBtn">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const returndata = document.querySelector('.returndata');
+    const queryInfoList = document.getElementById('queryinfo');
+    document.querySelector(".testBtn").addEventListener("click",()=>
+    {
+      if (!returndata) {
+        console.error("Missing required elements in the DOM.");
+      }else{
+        axios.get('https://localhost:443/users/search',
+          {
+            params: { uid : "UID2024080817555212345679" }
+          }
+        )
+        .then(function (response) {
+          console.log(response);
+          const querydata = response.data.data;
+          for (const key in querydata) {
+            if (querydata.hasOwnProperty(key)) {
+              const listItem = document.createElement('li');
+              listItem.textContent = `${key}: ${querydata[key]}`;
+              queryInfoList.appendChild(listItem);
+          }};
+          returndata.innerText = "api ok";})
+        .catch(function (error) {
+          console.log(error);
+          returndata.innerText = "api no";})     
+      };
+    })   
+  </script>
+</body>
+</html>

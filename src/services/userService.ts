@@ -1,11 +1,11 @@
 import { Request } from 'express';
 
-import * as UserRepository from '../repositorys/userRepository';
-import ItransportResult from '../model/transportModel';
-import * as ValidateData from '../utility/validateData';
-import generateID from '../utility/IDGenerater';
-import { ValidateHash } from '../utility/hashData';
-import * as JwtHelper from '../helpers/jwtHelper';
+import * as UserRepository from '../repositorys/userRepository.js';
+import ItransportResult from '../model/transportModel.js';
+import * as ValidateData from '../utility/validateData.js';
+import generateID from '../utility/IDGenerater.js';
+import { ValidateHash } from '../utility/hashData.js';
+import * as JwtHelper from '../helpers/jwtHelper.js';
 
 
 async function GetAllUsers(): Promise<ItransportResult> {

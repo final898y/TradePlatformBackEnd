@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
-import env from '../env';
-import * as redisHelper from './redisHelper';
+import env from '../env.js';
+import * as redisHelper from './redisHelper.js';
 import { string } from "zod";
 
 

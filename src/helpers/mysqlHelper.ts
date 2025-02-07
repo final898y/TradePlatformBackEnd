@@ -1,7 +1,7 @@
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import env from '../env';
+import env from '../env.js';
 
-import * as errorHandling from '../utility/errorHandling'
+import * as errorHandling from '../utility/errorHandling.js'
 
 function BuildMysqlStatementSelect(tableName: string): string;
 function BuildMysqlStatementSelect(tableName: string, filterField?: string[]): string;

@@ -1,4 +1,4 @@
-import { User, UserSchema } from '../model/userModel';
+import { User, UserSchema } from '../model/userModel.js';
 import { Request } from 'express';
 import { z, ZodError } from 'zod';
 

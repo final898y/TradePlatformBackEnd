@@ -1,14 +1,14 @@
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import env from '../env';
+import env from '../env.js';
 import express, { Request, Response } from 'express';
-import { SelectQuery, InsertQuery, UpdateQuery } from '../helpers/mysqlHelper';
+import { SelectQuery, InsertQuery, UpdateQuery } from '../helpers/mysqlHelper.js';
 import {
   ValidateRegisterData,
   ValidateUserData,
   ValidatePartialUserData,
-} from '../utility/validateData';
-import generateID from '../utility/IDGenerater';
-import * as errorHandling from '../utility/errorHandling'
+} from '../utility/validateData.js';
+import generateID from '../utility/IDGenerater.js';
+import * as errorHandling from '../utility/errorHandling.js'
 
 
 const pool = mysql.createPool({

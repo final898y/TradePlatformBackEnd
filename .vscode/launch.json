@@ -9,9 +9,10 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/build/app.js",
+      "program": "${workspaceFolder}/build/src/app.js",
       "preLaunchTask": "tsc: watch - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "outFiles": ["${workspaceFolder}/build/**/*.js"],
+      "console": "integratedTerminal",
       // "env": {
       //     "NODE_EXTRA_CA_CERTS": "${workspaceFolder}/src/cert.pem",
       //     "NODE_TLS_REJECT_UNAUTHORIZED" : "0",
