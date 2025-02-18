@@ -1,8 +1,7 @@
-import { ecPaycheckoutList } from '../model/payModel.js';
 import env from '../env.js';
 import crypto from 'crypto';
 
-function GetCheckMacValue(checkoutList: ecPaycheckoutList): string {
+function GetCheckMacValue(checkoutList: Object): string {
   // 1. 先將參數依照第一個英文字母由 A-Z 排序
   const sortedEcPayData = Object.fromEntries(
     Object.entries(checkoutList).sort(([keyA], [keyB]) =>
