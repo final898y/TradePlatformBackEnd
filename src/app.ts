@@ -12,6 +12,7 @@ import swaggerDocument from './swagger.json' with { type: 'json' };
 import env from './env.js';
 import IndexRouter from './routers/indexRouter.js';
 import UserRouter from './routers/userRouter.js';
+import payRouter from './routers/payRouter.js'
 import TestRouter from './routers/testRouter.js';
 
 
@@ -40,6 +41,7 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 app.use('/', IndexRouter);
 app.use('/users', UserRouter);
+app.use('/pay',payRouter)
 app.use('/tests', TestRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

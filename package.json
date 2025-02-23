@@ -4,9 +4,9 @@
   "license": "MPL 2.0",
   "type": "module",
   "scripts": {
-    "start": "node --loader ts-node/esm ./src/app.ts",
+    "start": "node --env-file=.env --loader ts-node/esm ./src/app.ts",
     "build": "tsc --project tsconfig.json",
-    "startjs": "node ./build/src/app.js",
+    "startjs": "node --env-file=.env ./build/src/app.js",
     "builddc": "docker compose build --no-cache --pull",
     "startdc": "docker compose up -d",
     "startdb": "docker compose up -d mysql redis mongo",
