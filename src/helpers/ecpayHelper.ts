@@ -1,7 +1,7 @@
 import env from '../env.js';
 import crypto from 'crypto';
 
-function GetCheckMacValue(checkoutList: Object): string {
+export function GetCheckMacValue(checkoutList: Object): string {
   // 1. 先將參數依照第一個英文字母由 A-Z 排序
   const sortedEcPayData = Object.fromEntries(
     Object.entries(checkoutList).sort(([keyA], [keyB]) =>
@@ -35,5 +35,3 @@ function compareFn(keyA: string, keyB: string) {
   }
   return keyA.length - keyB.length; // 若字母相同，短的在前
 }
-
-export { GetCheckMacValue };

@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
-import { ecPayBackendOutput } from '../model/payModel.js';
 import * as ecpayService from '../services/ecpayService.js';
 
 const getCheckOut = async (req: Request, res: Response): Promise<void> => {
   try {
-    const output: ecPayBackendOutput = await ecpayService.getCheckOut(req);
+    const output = ecpayService.getCheckOut(req);
     res.status(200).json(output);
   } catch (error) {
     console.error(error);
@@ -15,7 +14,7 @@ const getCheckOut = async (req: Request, res: Response): Promise<void> => {
 const getPayResult = async (req: Request, res: Response): Promise<void> => {
   try {
     if (req) {
-      const output: string = await ecpayService.getPayResult(req);
+      const output: string = ecpayService.getPayResult(req);
       res.status(200).send(output);
     }
   } catch (error) {

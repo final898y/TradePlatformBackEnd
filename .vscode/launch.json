@@ -13,6 +13,7 @@
       "preLaunchTask": "tsc: watch - tsconfig.json",
       "outFiles": ["${workspaceFolder}/build/**/*.js"],
       "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
       // "env": {
       //     "NODE_EXTRA_CA_CERTS": "${workspaceFolder}/src/cert.pem",
       //     "NODE_TLS_REJECT_UNAUTHORIZED" : "0",

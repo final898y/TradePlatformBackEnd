@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import dotenv from 'dotenv';
 
-dotenv.config();
+//import dotenv from 'dotenv';
+//dotenv.config();
 
 // 使用 Zod 定義你的環境變數 schema
 const envSchema = z.object({
@@ -10,9 +10,9 @@ const envSchema = z.object({
     .transform((val) => parseInt(val, 10))
     .default('3000'),
   HTTPSPORT: z
-  .string()
-  .transform((val) => parseInt(val, 10))
-  .default('443'),
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .default('443'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   MYSQLHOST: z.string(),
   MYSQLHOST_TEST: z.string(),
@@ -23,6 +23,8 @@ const envSchema = z.object({
   JWTKEY: z.string(),
   ecpayHashKey: z.string(),
   ecpayHashIV: z.string(),
+  linepayapi_ChannelID: z.string(),
+  linepayapi_ChannelSecretKey: z.string(),
 });
 
 // 驗證並解析環境變數

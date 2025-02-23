@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import * as payModel from '../model/payModel.js';
-import { GetCheckMacValue } from '../helpers/payHelper.js';
+import { GetCheckMacValue } from '../helpers/ecpayHelper.js';
 
 function getCheckOut(req: Request): payModel.ecPayBackendOutput {
   const inputData = req.body;
