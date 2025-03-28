@@ -1,25 +1,32 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as ecpayService from '../services/ecpayService.js';
+import { ApiError } from '../middlewares/errorHandler.js';
 
-const getCheckOut = async (req: Request, res: Response): Promise<void> => {
+const getCheckOut = (req: Request, res: Response, next: NextFunction) => {
   try {
     const output = ecpayService.getCheckOut(req);
     res.status(200).json(output);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching checkOut Data');
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, 'Error fetching checkout data'));
+    }
   }
 };
 
-const getPayResult = async (req: Request, res: Response): Promise<void> => {
+const getPayResult = (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req) {
       const output: string = ecpayService.getPayResult(req);
       res.status(200).send(output);
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send(`Error:${error}`);
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, 'Error fetching PayResult data'));
+    }
   }
 };
 

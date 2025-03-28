@@ -15,14 +15,15 @@ async function createJwt(mobilephone: string, password: string): Promise<string>
 async function verifyJwt(token: string): Promise<boolean> {
   try {
     const decodedjwt = jwt.verify(token, JwtKEY, JwtSignoptions);
-    if (decodedjwt !== undefined && typeof decodedjwt !== 'string') {
-      const checkJwtToken = await redisHelper.getData(decodedjwt['MobilePhone']);
+    if (typeof decodedjwt !== 'string' && typeof decodedjwt.MobilePhone == 'string') {
+      const checkJwtToken = await redisHelper.getData(decodedjwt.MobilePhone);
       if (checkJwtToken[0]) {
         return true;
       }
     }
     return false;
   } catch (error) {
+    console.log(`verifyJwt Error : ${JSON.stringify(error)}`);
     return false;
   }
 }

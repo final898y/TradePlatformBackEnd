@@ -3,7 +3,7 @@ import * as payModel from '../model/payModel.js';
 import { GetCheckMacValue } from '../helpers/ecpayHelper.js';
 
 function getCheckOut(req: Request): payModel.ecPayBackendOutput {
-  const inputData = req.body;
+  const inputData: unknown = req.body;
   if (!inputData) {
     throw new Error('Request body解析錯誤');
   }
@@ -12,7 +12,7 @@ function getCheckOut(req: Request): payModel.ecPayBackendOutput {
     throw new Error(`資料格式錯誤: ${JSON.stringify(parseResult.error)}`);
   }
   const MerchantTradeNo = crypto.randomUUID().replace(/-/g, '').substring(0, 20);
-  let checkoutList = {
+  const checkoutList = {
     ...parseResult.data,
     MerchantTradeNo: MerchantTradeNo,
   };
@@ -23,7 +23,7 @@ function getCheckOut(req: Request): payModel.ecPayBackendOutput {
 }
 
 function getPayResult(req: Request): string {
-  const inputData = req.body;
+  const inputData: unknown = req.body;
   if (!inputData) {
     throw new Error('Request body解析錯誤');
   }
@@ -33,8 +33,8 @@ function getPayResult(req: Request): string {
   }
 
   const { CheckMacValue, ...newData } = parseResult.data;
-  let caculatMacValue = GetCheckMacValue(newData);
-  if (parseResult.data['CheckMacValue'] == caculatMacValue) {
+  const caculatMacValue = GetCheckMacValue(newData);
+  if (CheckMacValue == caculatMacValue) {
     return '1|OK';
   } else {
     return 'CheckMacValue dont match';

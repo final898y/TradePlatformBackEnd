@@ -1,7 +1,7 @@
 import env from '../env.js';
 import crypto from 'crypto';
 
-export function GetCheckMacValue(checkoutList: Object): string {
+export function GetCheckMacValue(checkoutList: object): string {
   // 1. 先將參數依照第一個英文字母由 A-Z 排序
   const sortedEcPayData = Object.fromEntries(
     Object.entries(checkoutList).sort(([keyA], [keyB]) =>
@@ -19,9 +19,9 @@ export function GetCheckMacValue(checkoutList: Object): string {
 
   // 5. 特殊字符處理
   urlEncodedString = urlEncodedString
-    .replace(/\'/g, '%27')
-    .replace(/\~/g, '%7e')
-    .replace(/\%20/g, '+');
+    .replace(/'/g, '%27')
+    .replace(/~/g, '%7e')
+    .replace(/%20/g, '+');
 
   // 6. 使用 SHA256 產生雜湊值，並轉大寫
   return crypto.createHash('sha256').update(urlEncodedString).digest('hex').toUpperCase();

@@ -1,13 +1,17 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as linepayService from '../services/linepayService.js';
+import { ApiError } from '../middlewares/errorHandler.js';
 
-const paymentRequest = async (req: Request, res: Response): Promise<void> => {
+const paymentRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const output: string = await linepayService.paymentRequest(req);
     res.status(200).send(output);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching Data');
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, 'Error fetching Linepay Request data'));
+    }
   }
 };
 

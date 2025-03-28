@@ -11,13 +11,16 @@ function signKey(clientKey: string, msg: string) {
     .digest('base64');
 }
 
-function handleBigInteger(text: string) {
+function handleBigInteger(text: string): payModel.LinePaymentResponse {
   const largeNumberRegex = /:\s*(\d{16,})\b/g;
   const processedText = text.replace(largeNumberRegex, ': "$1"');
 
-  const data = JSON.parse(processedText);
-
-  return data;
+  const data: unknown = JSON.parse(processedText);
+  const parseResponResult = payModel.LinePaymentResponseSchema.safeParse(data);
+  if (!parseResponResult.success) {
+    throw new Error(`line回傳資料驗證錯誤: ${JSON.stringify(parseResponResult.error)}`);
+  }
+  return parseResponResult.data;
 }
 export function createLinePRrequestOption(
   linePR_FrInput: payModel.linePayPRFI,
@@ -36,7 +39,7 @@ export function createLinePRrequestOption(
     cancelUrl: config.redirectUrls.cancelUrl,
   };
 
-  let inputOption = {
+  const inputOption = {
     method: 'POST',
     baseUrl: 'https://sandbox-api-pay.line.me',
     apiPath: '/v3/payments/request',
@@ -70,9 +73,9 @@ export async function requestLineAPI({
   queryString?: string;
   data?: object | null;
   signal?: AbortSignal | null;
-}): Promise<any> {
+}): Promise<payModel.LinePaymentResponse> {
   const nonce: string = crypto.randomUUID();
-  let signature: string = '';
+  let signature = '';
 
   // 根據不同方式(method)生成MAC
   if (method === 'GET') {

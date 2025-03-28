@@ -1,7 +1,7 @@
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import env from '../env.js';
 
-import * as errorHandling from '../utility/errorHandling.js'
+import * as errorHandling from '../utility/errorHandling.js';
 
 function BuildMysqlStatementSelect(tableName: string): string;
 function BuildMysqlStatementSelect(tableName: string, filterField?: string[]): string;
@@ -81,15 +81,15 @@ async function SelectQuery(
 ): Promise<object[]> {
   try {
     const sqlStatement = BuildMysqlStatementSelect(tableName, filterField);
-    const [results, fields] = await pool.query<RowDataPacket[]>(sqlStatement, filterValue);
+    const [results, _fields] = await pool.query<RowDataPacket[]>(sqlStatement, filterValue);
     return results;
   } catch (err) {
-    if(err instanceof Error){
+    if (err instanceof Error) {
       const sqlErr = err as errorHandling.MySqlError;
       errorHandling.logSqlError(sqlErr);
       throw sqlErr;
     }
-    return [];  // 錯誤處理備案，防止未知錯誤
+    return []; // 錯誤處理備案，防止未知錯誤
   }
 }
 
@@ -100,7 +100,7 @@ async function InsertQuery(
 ): Promise<ResultSetHeader> {
   try {
     const sqlStatement = BuildMysqlStatementInsert(tableName, insertField);
-    const [ResultSetHeader, FieldPacket] = await pool.query<ResultSetHeader>(
+    const [ResultSetHeader, _FieldPacket] = await pool.query<ResultSetHeader>(
       sqlStatement,
       insertValue,
     );
@@ -115,7 +115,7 @@ async function InsertQuery(
     // },
     return ResultSetHeader;
   } catch (err) {
-    if(err instanceof Error){
+    if (err instanceof Error) {
       const sqlErr = err as errorHandling.MySqlError;
       errorHandling.logSqlError(sqlErr);
       throw sqlErr;
@@ -132,13 +132,13 @@ async function UpdateQuery(
 ): Promise<ResultSetHeader> {
   try {
     const sqlStatement = BuildMysqlStatementUpdate(tableName, updateField, filterField);
-    const [ResultSetHeader, FieldPacket] = await pool.query<ResultSetHeader>(
+    const [ResultSetHeader, _FieldPacket] = await pool.query<ResultSetHeader>(
       sqlStatement,
       updateAndFilterValue,
     );
     return ResultSetHeader;
   } catch (err) {
-    if(err instanceof Error){
+    if (err instanceof Error) {
       const sqlErr = err as errorHandling.MySqlError;
       errorHandling.logSqlError(sqlErr);
       throw sqlErr;
@@ -159,9 +159,12 @@ async function InsertAfterSelectQuery(
     const insertStatement = BuildMysqlStatementInsert(tableName, insertField);
     const connection = await pool.getConnection();
 
-    const [results, fields] = await connection.query<RowDataPacket[]>(selectStatement, filterValue);
+    const [results, _fields] = await connection.query<RowDataPacket[]>(
+      selectStatement,
+      filterValue,
+    );
     if (results.length === 0) {
-      const [ResultSetHeader, FieldPacket] = await connection.query<ResultSetHeader>(
+      const [ResultSetHeader, _FieldPacket] = await connection.query<ResultSetHeader>(
         insertStatement,
         insertValue,
       );
@@ -171,7 +174,7 @@ async function InsertAfterSelectQuery(
       return 0;
     }
   } catch (err) {
-    if(err instanceof Error){
+    if (err instanceof Error) {
       const sqlErr = err as errorHandling.MySqlError;
       errorHandling.logSqlError(sqlErr);
       throw sqlErr;

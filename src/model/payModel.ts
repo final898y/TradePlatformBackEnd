@@ -80,7 +80,7 @@ const productSchema = z.object({
 });
 const packageSchema = z.object({
   id: z.string(), //套裝產品ID
-  name: z.string().optional(), //套裝產品的​​名稱或配送的合作分店名稱
+  name: z.string().optional(),
   amount: z.number(),
   products: z.array(productSchema),
   userFee: z.number().optional(),
@@ -132,7 +132,7 @@ export const LinePaymentResponseSchema = z.object({
   returnMessage: z.string(),
   info: InfoSchema,
 });
-
+export type LinePaymentResponse = z.infer<typeof LinePaymentResponseSchema>;
 // interface ecPayBackendOutput {
 //   CheckMacValue: string;
 //   MerchantTradeNo: string;

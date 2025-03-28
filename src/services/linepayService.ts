@@ -2,8 +2,8 @@ import { Request } from 'express';
 import * as payModel from '../model/payModel.js';
 import * as linepayHelper from '../helpers/linepayHelper.js';
 
-async function paymentRequest(req: Request): Promise<any> {
-  const inputData = req.body;
+async function paymentRequest(req: Request): Promise<string> {
+  const inputData: unknown = req.body;
   if (!inputData) {
     throw new Error('Request body解析錯誤');
   }
@@ -15,13 +15,8 @@ async function paymentRequest(req: Request): Promise<any> {
   const inputOption: payModel.linePayPRInputOption = linepayHelper.createLinePRrequestOption(
     parseResult.data,
   );
-  let linePRresult = await linepayHelper.requestLineAPI(inputOption);
-
-  const parseResponResult = payModel.LinePaymentResponseSchema.safeParse(linePRresult);
-  if (!parseResponResult.success) {
-    throw new Error(`line回傳資料驗證錯誤: ${JSON.stringify(parseResponResult.error)}`);
-  }
-  return parseResponResult.data.info.paymentUrl.web;
+  const linePRresult = await linepayHelper.requestLineAPI(inputOption);
+  return linePRresult.info.paymentUrl.web;
 }
 
 // function getPayResult(req: Request): string {
