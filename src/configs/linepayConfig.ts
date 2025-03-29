@@ -1,6 +1,8 @@
+const ngrokbaseUrl = 'https://3284-180-177-110-215.ngrok-free.app';
+const baseUrl ='http://localhost:5173';
 export default {
   redirectUrls: {
-    confirmUrl: 'https://pay-store.example.com/order/payment/authorize',
-    cancelUrl: 'https://pay-store.example.com/order/payment/cancel',
+    confirmUrl: `${baseUrl}/linepay/confirm`,
+    cancelUrl: `${baseUrl}/linepay/cancel`,
   },
 };

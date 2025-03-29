@@ -15,6 +15,19 @@ const paymentRequest = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
+const paymentconfirmation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const output: number = await linepayService.paymentconfirmation(req);
+    res.status(200).send(output.toString());
+  } catch (error) {
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, 'Error fetching Linepay Confirmation data'));
+    }
+  }
+};
+
 // const getPayResult = async (req: Request, res: Response): Promise<void> => {
 //   try {
 //     if (req) {
@@ -27,4 +40,4 @@ const paymentRequest = async (req: Request, res: Response, next: NextFunction) =
 //   }
 // };
 
-export { paymentRequest };
+export { paymentRequest,paymentconfirmation };

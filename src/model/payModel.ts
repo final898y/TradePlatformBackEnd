@@ -103,6 +103,7 @@ export const linePayPRInputOptionSchema = z.object({
   queryString: z.string(),
   data: linePayPRDataSchema,
 });
+//LINE Pay Payment request
 export type linePayPRInputOption = z.infer<typeof linePayPRInputOptionSchema>;
 
 export const linepayPRFrountendInputSchema = z.object({
@@ -127,12 +128,41 @@ const InfoSchema = z.object({
 });
 
 // 定義整體回應的 schema
-export const LinePaymentResponseSchema = z.object({
+export const LinePaymentPRResponseSchema = z.object({
   returnCode: z.literal('0000'),
   returnMessage: z.string(),
   info: InfoSchema,
 });
-export type LinePaymentResponse = z.infer<typeof LinePaymentResponseSchema>;
+export type LinePaymentPRResponse = z.infer<typeof LinePaymentPRResponseSchema>;
+
+//LINE Pay Payment confirmation
+export const LinePaymentPCFrountendInputSchema =z.object({
+  transactionId:z.string(),
+  orderId:z.string(),
+});
+export const LinePaymentPCRequestSchema = z.object({
+  amount: z.number(),
+  currency: z.string(),
+});
+const payInfoSchema = z.object({
+  method: z.string(),
+  amount: z.number()
+});
+
+const infoSchema = z.object({
+  orderId: z.string(),
+  transactionId: z.string(),
+  payInfo: z.array(payInfoSchema)
+});
+
+export const LinePaymentPCResponseSchema = z.object({
+  returnCode: z.literal('0000'),
+  returnMessage: z.string(),
+  info: infoSchema
+});
+export type LinePaymentPCResponse = z.infer<typeof LinePaymentPCResponseSchema>;
+
+
 // interface ecPayBackendOutput {
 //   CheckMacValue: string;
 //   MerchantTradeNo: string;

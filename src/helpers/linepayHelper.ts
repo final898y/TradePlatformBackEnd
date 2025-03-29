@@ -11,12 +11,18 @@ function signKey(clientKey: string, msg: string) {
     .digest('base64');
 }
 
-function handleBigInteger(text: string): payModel.LinePaymentResponse {
+function handleBigInteger(text: string,apiname:string): payModel.LinePaymentPRResponse| payModel.LinePaymentPCResponse{
   const largeNumberRegex = /:\s*(\d{16,})\b/g;
   const processedText = text.replace(largeNumberRegex, ': "$1"');
 
   const data: unknown = JSON.parse(processedText);
-  const parseResponResult = payModel.LinePaymentResponseSchema.safeParse(data);
+  var parseResponResult;
+  if(apiname =='request'){
+    parseResponResult = payModel.LinePaymentPRResponseSchema.safeParse(data);
+  }
+  else{
+    parseResponResult = payModel.LinePaymentPCResponseSchema.safeParse(data);
+  }
   if (!parseResponResult.success) {
     throw new Error(`line回傳資料驗證錯誤: ${JSON.stringify(parseResponResult.error)}`);
   }
@@ -47,7 +53,7 @@ export function createLinePRrequestOption(
     data: {
       amount: caculatAmount,
       currency: 'TWD',
-      orderId: 'MKSI_S_20180904_1000003',
+      orderId: 'MKSI_S_20180904_1000001',
       packages: inputpackages,
       redirectUrls: inputredirectUrls,
     },
@@ -73,7 +79,7 @@ export async function requestLineAPI({
   queryString?: string;
   data?: object | null;
   signal?: AbortSignal | null;
-}): Promise<payModel.LinePaymentResponse> {
+},apiname:string): Promise<payModel.LinePaymentPRResponse|payModel.LinePaymentPCResponse> {
   const nonce: string = crypto.randomUUID();
   let signature = '';
 
@@ -109,6 +115,6 @@ export async function requestLineAPI({
     },
   );
 
-  const processedResponse = handleBigInteger(await response.text());
+  const processedResponse = handleBigInteger(await response.text(),apiname);
   return processedResponse;
 }
