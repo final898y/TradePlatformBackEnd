@@ -2,18 +2,13 @@ import express from 'express';
 import fs from 'fs';
 import https from 'https';
 import http from 'http';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './swagger.json' with { type: 'json' };
+import cookieParser from 'cookie-parser';
 
 import env from './env.js';
 import IndexRouter from './routers/indexRouter.js';
-import UserRouter from './routers/userRouter.js';
-import payRouter from './routers/payRouter.js';
-import TestRouter from './routers/testRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,22 +19,32 @@ const httpsport: number = env.HTTPSPORT;
 app.set('view engine', 'pug');
 app.set('views', './views');
 
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://localhost:443', 'http://localhost:5173'],
+const allowedOrigins: string[] = [
+  'http://localhost:3000',
+  'https://localhost:443',
+  'http://localhost:5173',
+  'https://localhost:5173',
+];
+
+const corsOptions: CorsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
 };
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-app.use('/', IndexRouter);
-app.use('/users', UserRouter);
-app.use('/pay', payRouter);
-app.use('/tests', TestRouter);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api', IndexRouter);
 
 app.get('/axios', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'axiosTest.html'));
