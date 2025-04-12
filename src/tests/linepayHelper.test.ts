@@ -16,7 +16,7 @@ test('產生Line payments request body', () => {
     data: {
       amount: 100,
       currency: 'TWD',
-      orderId: 'MKSI_S_20180904_1000003',
+      orderId: 'MKSI_S_20180904_1000001',
       packages: [
         {
           id: '1',
@@ -31,8 +31,8 @@ test('產生Line payments request body', () => {
         },
       ],
       redirectUrls: {
-        confirmUrl: 'https://pay-store.example.com/order/payment/authorize',
-        cancelUrl: 'https://pay-store.example.com/order/payment/cancel',
+        confirmUrl: 'http://localhost:5173/linepay/confirm',
+        cancelUrl: 'http://localhost:5173/linepay/cancel',
       },
     },
   } as payModel.linePayPRInputOption;
