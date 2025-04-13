@@ -1,5 +1,5 @@
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import env from '../env.js';
+import env from '../configs/env.js';
 import express, { Request, Response } from 'express';
 import { SelectQuery, InsertQuery, UpdateQuery } from '../helpers/mysqlHelper.js';
 import {

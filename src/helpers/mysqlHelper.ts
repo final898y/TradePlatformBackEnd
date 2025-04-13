@@ -1,5 +1,5 @@
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import env from '../env.js';
+import env from '../configs/env.js';
 
 import * as errorHandling from '../utility/errorHandling.js';
 

@@ -7,7 +7,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 
-import env from './env.js';
+import env from './configs/env.js';
+import config from './configs/configIndex.js';
+
 import IndexRouter from './routers/indexRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -19,16 +21,9 @@ const httpsport: number = env.HTTPSPORT;
 app.set('view engine', 'pug');
 app.set('views', './views');
 
-const allowedOrigins: string[] = [
-  'http://localhost:3000',
-  'https://localhost:443',
-  'http://localhost:5173',
-  'https://localhost:5173',
-];
-
 const corsOptions: CorsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || config.allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -53,32 +48,32 @@ app.get('/axios', (req, res) => {
 // 註冊全局錯誤處理中介軟體（必須放在所有路由的最後）
 app.use(errorHandler);
 
-const privateKey = fs.readFileSync('src/key.pem');
-const certificate = fs.readFileSync('src/cert.crt');
+if (env.NODE_ENV === 'development') {
+  const privateKey = fs.readFileSync(path.join(__dirname, 'key.pem'));
+  const certificate = fs.readFileSync(path.join(__dirname, 'cert.crt'));
 
-const httpsServer = https.createServer(
-  {
-    key: privateKey,
-    cert: certificate,
-  },
-  app,
-);
-httpsServer.listen(httpsport, () => {
-  console.log(`Example app listening at https://localhost:${httpsport}`);
-  console.log(env.NODE_ENV);
-  console.log(process.env.NODE_EXTRA_CA_CERTS);
-});
+  const httpsServer = https.createServer(
+    {
+      key: privateKey,
+      cert: certificate,
+    },
+    app,
+  );
+  httpsServer.listen(httpsport, () => {
+    console.log(`Example app listening at https://localhost:${httpsport}`);
+  });
 
-const httpServer = http.createServer((req, res) => {
-  const redirectUrl = `https://localhost:${httpsport}${req.url}`;
-  res.writeHead(301, { Location: redirectUrl });
-  res.end();
-});
-httpServer.listen(httpport, () => {
-  console.log(`HTTP Server running on port ${httpport} and redirecting to HTTPS`);
-});
-
-// app.listen(httpport, () => {
-//   console.log(`Example app listening on port ${httpport}`);
-//   console.log(env.NODE_ENV);
-// });
+  const httpServer = http.createServer((req, res) => {
+    const redirectUrl = `https://localhost:${httpsport}${req.url}`;
+    res.writeHead(301, { Location: redirectUrl });
+    res.end();
+  });
+  httpServer.listen(httpport, () => {
+    console.log(`HTTP Server running on port ${httpport} and redirecting to HTTPS`);
+  });
+} else {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}

@@ -5,14 +5,8 @@ import { z } from 'zod';
 
 // 使用 Zod 定義你的環境變數 schema
 const envSchema = z.object({
-  HTTPPORT: z
-    .string()
-    .transform((val) => parseInt(val, 10))
-    .default('3000'),
-  HTTPSPORT: z
-    .string()
-    .transform((val) => parseInt(val, 10))
-    .default('443'),
+  HTTPPORT: z.preprocess((val) => Number(val), z.number().int().default(3000)),
+  HTTPSPORT: z.preprocess((val) => Number(val), z.number().int().default(443)),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   MYSQLHOST: z.string(),
   MYSQLHOST_TEST: z.string(),

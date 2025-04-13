@@ -3,6 +3,9 @@
   "author": "final898y",
   "license": "MPL 2.0",
   "type": "module",
+  "engines": {
+    "node": "22.14.0"
+  },
   "scripts": {
     "start": "node --env-file=.env --loader ts-node/esm ./src/app.ts",
     "build": "tsc --project tsconfig.json",

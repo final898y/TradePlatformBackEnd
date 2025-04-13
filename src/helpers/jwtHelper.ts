@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import env from '../env.js';
+import env from '../configs/env.js';
 import * as redisHelper from './redisHelper.js';
 
 const JwtKEY: jwt.Secret = env.JWTKEY;

@@ -1,4 +1,4 @@
-import env from '../env.js';
+import env from '../configs/env.js';
 import crypto from 'crypto';
 import * as payModel from '../model/payModel.js';
 import config from '../configs/linepayConfig.js';
@@ -11,16 +11,18 @@ function signKey(clientKey: string, msg: string) {
     .digest('base64');
 }
 
-function handleBigInteger(text: string,apiname:string): payModel.LinePaymentPRResponse| payModel.LinePaymentPCResponse{
+function handleBigInteger(
+  text: string,
+  apiname: string,
+): payModel.LinePaymentPRResponse | payModel.LinePaymentPCResponse {
   const largeNumberRegex = /:\s*(\d{16,})\b/g;
   const processedText = text.replace(largeNumberRegex, ': "$1"');
 
   const data: unknown = JSON.parse(processedText);
   var parseResponResult;
-  if(apiname =='request'){
+  if (apiname == 'request') {
     parseResponResult = payModel.LinePaymentPRResponseSchema.safeParse(data);
-  }
-  else{
+  } else {
     parseResponResult = payModel.LinePaymentPCResponseSchema.safeParse(data);
   }
   if (!parseResponResult.success) {
@@ -65,21 +67,24 @@ export function createLinePRrequestOption(
   return parseResult.data;
 }
 
-export async function requestLineAPI({
-  method = 'GET',
-  baseUrl = 'https://sandbox-api-pay.line.me',
-  apiPath,
-  queryString = '',
-  data = null,
-  signal = null,
-}: {
-  method: string;
-  baseUrl: string;
-  apiPath: string;
-  queryString?: string;
-  data?: object | null;
-  signal?: AbortSignal | null;
-},apiname:string): Promise<payModel.LinePaymentPRResponse|payModel.LinePaymentPCResponse> {
+export async function requestLineAPI(
+  {
+    method = 'GET',
+    baseUrl = 'https://sandbox-api-pay.line.me',
+    apiPath,
+    queryString = '',
+    data = null,
+    signal = null,
+  }: {
+    method: string;
+    baseUrl: string;
+    apiPath: string;
+    queryString?: string;
+    data?: object | null;
+    signal?: AbortSignal | null;
+  },
+  apiname: string,
+): Promise<payModel.LinePaymentPRResponse | payModel.LinePaymentPCResponse> {
   const nonce: string = crypto.randomUUID();
   let signature = '';
 
@@ -115,6 +120,6 @@ export async function requestLineAPI({
     },
   );
 
-  const processedResponse = handleBigInteger(await response.text(),apiname);
+  const processedResponse = handleBigInteger(await response.text(), apiname);
   return processedResponse;
 }

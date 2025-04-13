@@ -1,4 +1,4 @@
-import env from '../env.js';
+import env from '../configs/env.js';
 import crypto from 'crypto';
 
 export function GetCheckMacValue(checkoutList: object): string {
