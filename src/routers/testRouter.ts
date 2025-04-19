@@ -10,6 +10,8 @@ import {
 import generateID from '../utility/IDGenerater.js';
 import * as errorHandling from '../utility/errorHandling.js';
 import crypto from 'crypto';
+import { createClient } from '@supabase/supabase-js';
+import { Database, Tables } from '../model/supabaseModel.js';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -203,6 +205,44 @@ function compareFn(keyA: string, keyB: string) {
   return keyA.length - keyB.length; // 若字母相同，短的在前
 }
 
+type users = Tables<'users'>;
+
+type QueryResult<T> = { success: true; data: T[] } | { success: false; error: string };
+
+async function queryUsers<T>(selectcolumn: string, filterValue: string): Promise<QueryResult<T>> {
+  // Create a single supabase client for interacting with your database
+  const SUPABASE_URL = 'https://mcvqgvjxfhohqrhwzkyq.supabase.co';
+  const SUPABASE_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jdnFndmp4ZmhvaHFyaHd6a3lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5MDA3NDEsImV4cCI6MjA2MDQ3Njc0MX0.ilKmeMYh_1BUcKPNBihSCeCgmEEsLPiAyTGPMaHizpQ';
+
+  const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY);
+  const { data, error } = await supabase
+    .from('users')
+    .select(selectcolumn)
+    .eq(selectcolumn, filterValue);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data: data as T[] };
+}
+
+const testSupabaseSelect = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const email = req.query.email as string;
+    const result = await queryUsers<{ email: string }>('email', email);
+
+    if (result.success) {
+      res.status(200).json(result.data);
+    } else {
+      res.status(400).json(result.error);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 const router = express.Router();
 router.get('/selectall', testMysqlSelectAll);
 router.get('/select', testMysqlSelect);
@@ -210,5 +250,6 @@ router.post('/insert', testMysqlInsert);
 router.get('/zod', testZOD);
 router.put('/edit', testMysqlUpdate);
 router.get('/ck', testcheckValue);
+router.get('/supabase', testSupabaseSelect);
 
 export default router;

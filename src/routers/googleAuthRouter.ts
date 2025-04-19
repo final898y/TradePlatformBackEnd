@@ -1,8 +1,28 @@
 import express, { Request, Response } from 'express';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
+import crypto from 'crypto';
 
 const router = express.Router();
 const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
+
+// 產生並回傳 CSRF token，設為 cookie
+export const getCsrfToken = (req: Request, res: Response) => {
+  try {
+    const csrfToken = crypto.randomUUID(); // 產生安全亂數
+
+    res.cookie('g_csrf_token', csrfToken, {
+      httpOnly: false, // 讓前端可讀取
+      sameSite: 'none', // 跨網域用
+      secure: true, // 必須用 HTTPS
+      maxAge: 10 * 60 * 1000, // 有效時間：10分鐘
+    });
+
+    res.status(200).json({ success: true, csrfToken });
+  } catch (error) {
+    console.error('❌ 發生錯誤：無法建立 CSRF Token', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤，請稍後再試。' });
+  }
+};
 
 export const verifyGoogleIdToken = async (req: Request, res: Response) => {
   try {
@@ -42,5 +62,6 @@ export const verifyGoogleIdToken = async (req: Request, res: Response) => {
 };
 
 router.post('/verifyGoogleIdToken', verifyGoogleIdToken);
+router.get('/getCsrfToken', getCsrfToken);
 
 export default router;
