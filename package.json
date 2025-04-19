@@ -7,9 +7,9 @@
     "node": "22.14.0"
   },
   "scripts": {
-    "start": "node --env-file=.env --loader ts-node/esm ./src/app.ts",
     "build": "tsc --project tsconfig.json",
-    "startjs": "node --env-file=.env ./build/src/app.js",
+    "start": "node ./build/src/app.js",
+    "dev:": "node --env-file=.env --loader ts-node/esm ./src/app.ts",
     "builddc": "docker compose build --no-cache --pull",
     "startdc": "docker compose up -d",
     "startdb": "docker compose up -d mysql redis mongo",
