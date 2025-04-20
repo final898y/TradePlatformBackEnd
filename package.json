@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "start": "node ./build/src/app.js",
+    "start:prod": "pm2 start ./build/src/app.js --no-daemon",
     "dev:": "node --env-file=.env --loader ts-node/esm ./src/app.ts",
     "builddc": "docker compose build --no-cache --pull",
     "startdc": "docker compose up -d",
