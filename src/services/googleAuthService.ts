@@ -34,7 +34,7 @@ const googleIdTokenPayloadSchema = z.object({
   name: z.string(), // 使用者全名
   picture: z.string().url().optional(), // 頭像網址，可能不存在
   given_name: z.string(), // 名
-  family_name: z.string(), // 姓
+  family_name: z.string().optional(), // 姓
   iat: z.number(), // token 發行時間（Unix 時間戳）
   exp: z.number(), // token 過期時間（Unix 時間戳）
   jti: z.string(), // JWT ID（唯一識別符）

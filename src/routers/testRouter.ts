@@ -12,6 +12,7 @@ import * as errorHandling from '../utility/errorHandling.js';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Database, Tables } from '../model/supabaseModel.js';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -243,6 +244,17 @@ const testSupabaseSelect = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+const testJWTpayload = async (req: Request, res: Response): Promise<void> => {
+  const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
+  const credential =
+    'eyJhbGciOiJSUzI1NiIsImtpZCI6IjIzZjdhMzU4Mzc5NmY5NzEyOWU1NDE4ZjliMjEzNmZjYzBhOTY0NjIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzNTkyMDA1MzM2ODctODdsYWgwc3U2dWZ2aDM0Z2kxYzE0bXQwc3VkcnBwMjEuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzNTkyMDA1MzM2ODctODdsYWgwc3U2dWZ2aDM0Z2kxYzE0bXQwc3VkcnBwMjEuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDMzNTAzMzM5NjcxODk3MDEyMjkiLCJlbWFpbCI6ImpwYWNnODk4eUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmJmIjoxNzQ1NDI3NDM3LCJuYW1lIjoiQWxhbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NJMGVQeEZObG4xV05GZ0FLcFBnd1pIUWlxVkc3MjNPT29pdkpWNElzbmNWM3A4R2gySj1zOTYtYyIsImdpdmVuX25hbWUiOiJBbGFuIiwiaWF0IjoxNzQ1NDI3NzM3LCJleHAiOjE3NDU0MzEzMzcsImp0aSI6IjA2MDhjN2ExOTE0M2M4MWRhOGUxYjkyYTVkMWI3ZDBlOTIwNzEyNTgifQ.Lt5BCX-Uii8jBnLexWMX3-m3KiWtI17Ehd-sJEORpdasKKfBg5bJaOC77U9NRToe21m2UNZYtBOYVbQh1Ogb1hGa0W6U0_7GTPq7vJ1Zc_SIt3j1FcZgtoVZjRNxKp_9AJBT2Af4wLwzYA8JkTao5HjzKoUpKTVd5JxfxpbdTJfcOxQ-VUH5AL-FrQPWp65Up-wgJ9rwMIPULtjCUDpJtmUVC9o4EllBRuu6XpZcbsvhS3IjhrLaiHpgylyhMHJbX-ZusQbGxXMmfNC3-9adDeHkwJ0IDaHoqM1PPcWy7MO9e6yHE1gYuPBZgEQQaog9naxo3z_6oxvEM0F80iWjRA';
+  const { payload } = await jwtVerify(credential, GOOGLE_JWKS, {
+    issuer: 'https://accounts.google.com',
+    audience: '359200533687-87lah0su6ufvh34gi1c14mt0sudrpp21.apps.googleusercontent.com', // ← 替換成你自己的 Client ID
+  });
+  res.status(200).json(payload);
+};
+
 const router = express.Router();
 router.get('/selectall', testMysqlSelectAll);
 router.get('/select', testMysqlSelect);
@@ -251,5 +263,6 @@ router.get('/zod', testZOD);
 router.put('/edit', testMysqlUpdate);
 router.get('/ck', testcheckValue);
 router.get('/supabase', testSupabaseSelect);
+router.get('/testjwtpayload', testJWTpayload);
 
 export default router;
