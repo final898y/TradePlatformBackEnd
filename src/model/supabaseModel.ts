@@ -62,6 +62,7 @@ export type Database = {
       };
       users: {
         Row: {
+          cellphone: string;
           created_at: string | null;
           email: string | null;
           id: number;
@@ -71,6 +72,7 @@ export type Database = {
           uuid: string;
         };
         Insert: {
+          cellphone?: string;
           created_at?: string | null;
           email?: string | null;
           id?: number;
@@ -80,6 +82,7 @@ export type Database = {
           uuid: string;
         };
         Update: {
+          cellphone?: string;
           created_at?: string | null;
           email?: string | null;
           id?: number;

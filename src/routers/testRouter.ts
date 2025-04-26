@@ -13,6 +13,7 @@ import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Database, Tables } from '../model/supabaseModel.js';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
+import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -244,6 +245,28 @@ const testSupabaseSelect = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+const testSupabaseSelect2 = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const googleid = req.query.googleid as string;
+    const { data, error } = await supaBaseHelper.supabase
+      .from('auth_providers') // 替換成你的資料表名稱
+      .select('id') // 只查 id 就好，效率較高
+      .eq('provider', 'google')
+      .eq('provider_user_id', googleid)
+      .limit(1); // 只要一筆結果就好，提早終止查詢
+    if (error) {
+      console.error('查詢錯誤：', error.message);
+    }
+    if (data) {
+      res.status(200).json(data[0]);
+    } else {
+      res.status(400).json(data);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 const testJWTpayload = async (req: Request, res: Response): Promise<void> => {
   const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
   const credential =
@@ -264,5 +287,6 @@ router.put('/edit', testMysqlUpdate);
 router.get('/ck', testcheckValue);
 router.get('/supabase', testSupabaseSelect);
 router.get('/testjwtpayload', testJWTpayload);
+router.get('/supabase2', testSupabaseSelect2);
 
 export default router;

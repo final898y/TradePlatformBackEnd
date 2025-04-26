@@ -27,9 +27,9 @@ const errorHandler = (err: ApiError, req: Request, res: Response, _next: NextFun
   console.error(`[${err.name}] ${err.stack}`); // 記錄錯誤類別與堆疊
 
   res.status(err.statusCode || 500).json({
-    status: 'error',
-    name: err.name, // 回傳錯誤類別
-    message: err.message,
+    success: false,
+    message: err.name, // 回傳錯誤類別
+    errordetail: err.message,
     ...(process.env.NODE_ENV === 'development' ? { stack: err.stack } : {}), // 只在開發環境返回 stack
   });
 };

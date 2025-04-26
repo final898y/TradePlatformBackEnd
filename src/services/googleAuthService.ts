@@ -53,19 +53,18 @@ export const verifyGoogleIdToken = async (
     });
     const parsedPayload = googleIdTokenPayloadSchema.parse(payload);
     const gooleIDChecked = await googleAuthRepository.verifyGoogleIdToken(parsedPayload.sub);
-    if (!gooleIDChecked) {
+    if (!gooleIDChecked?.success || gooleIDChecked.data === undefined) {
       return {
         success: false,
         statusCode: 404,
         message: 'This Google Account is not registered.',
-        data: parsedPayload.sub,
       };
     }
     return {
       success: true,
       statusCode: 200,
       message: 'This Google Account is registered.',
-      data: parsedPayload.sub,
+      data: gooleIDChecked.data,
     };
   } catch (error) {
     throw error;

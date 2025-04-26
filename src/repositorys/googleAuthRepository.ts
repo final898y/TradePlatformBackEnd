@@ -1,19 +1,67 @@
 import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
+import ItransportResult from '../model/transportModel.js';
 
-export const verifyGoogleIdToken = async (googleid: string): Promise<boolean> => {
+export const verifyGoogleIdToken = async (googlesub: string): Promise<ItransportResult<string>> => {
   try {
-    const { data, error } = await supaBaseHelper.supabase
-      .from('auth_providers') // 替換成你的資料表名稱
-      .select('id') // 只查 id 就好，效率較高
+    // 查 auth_providers，找符合的紀錄
+    const { data: authData, error: authError } = await supaBaseHelper.supabase
+      .from('auth_providers')
+      .select('id')
       .eq('provider', 'google')
-      .eq('provider_user_id', googleid)
-      .limit(1); // 只要一筆結果就好，提早終止查詢
-    if (error) {
-      console.error('查詢錯誤：', error.message);
-      return false;
+      .eq('provider_user_id', googlesub)
+      .single(); // 預期只會有一筆
+
+    if (authError) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: `auth_providers query error: ${authError.message}`,
+      };
     }
-    return data.length > 0;
-  } catch (error) {
-    throw error;
+
+    if (!authData?.id) {
+      return {
+        success: false,
+        statusCode: 400,
+        message: 'auth_providers: no matching user id found',
+      };
+    }
+
+    // 查 users 表，找該 id 的 email
+    const { data: userData, error: userError } = await supaBaseHelper.supabase
+      .from('users')
+      .select('cellphone')
+      .eq('id', authData.id)
+      .single(); // 預期只會一筆
+
+    if (userError) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: `users query error: ${userError.message}`,
+      };
+    }
+
+    if (!userData?.cellphone) {
+      return {
+        success: false,
+        statusCode: 400,
+        message: 'users: email not found',
+      };
+    }
+
+    // 成功回傳 email
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'get user email',
+      data: userData.cellphone,
+    };
+  } catch (e: any) {
+    return {
+      success: false,
+      statusCode: 500,
+      message: `unexpected error: ${e.message}`,
+    };
   }
 };
