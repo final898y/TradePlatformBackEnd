@@ -1,7 +1,7 @@
 import env from '../configs/env.js';
 import crypto from 'crypto';
 import * as payModel from '../model/payModel.js';
-import config from '../configs/linepayConfig.js';
+import config from '../configs/configIndex.js';
 
 function signKey(clientKey: string, msg: string) {
   const encoder = new TextEncoder();
@@ -43,8 +43,8 @@ export function createLinePRrequestOption(
     },
   ];
   const inputredirectUrls = {
-    confirmUrl: config.redirectUrls.confirmUrl,
-    cancelUrl: config.redirectUrls.cancelUrl,
+    confirmUrl: config.linepayredirectUrls.confirmUrl,
+    cancelUrl: config.linepayredirectUrls.cancelUrl,
   };
 
   const inputOption = {

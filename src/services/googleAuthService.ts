@@ -70,3 +70,33 @@ export const verifyGoogleIdToken = async (
     throw error;
   }
 };
+
+export const CheckDoubleSubmitCSRF = async (
+  csrfFromCookie: unknown,
+  csrfFromBody: string,
+): Promise<ItransportResult<string>> => {
+  // Check if cookie exists and is a string
+  if (typeof csrfFromCookie !== 'string' || !csrfFromCookie) {
+    return {
+      success: false,
+      statusCode: 400,
+      message: '無效的 CSRF Cookie',
+    };
+  }
+
+  // Double-submit CSRF verification with strict equality
+  if (csrfFromCookie !== csrfFromBody) {
+    return {
+      success: false,
+      statusCode: 403,
+      message: 'CSRF token 驗證失敗',
+    };
+  }
+
+  return {
+    success: true,
+    statusCode: 200,
+    message: 'CSRF 驗證成功',
+    data: csrfFromBody,
+  };
+};

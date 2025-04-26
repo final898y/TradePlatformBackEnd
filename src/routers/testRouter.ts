@@ -14,6 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Database, Tables } from '../model/supabaseModel.js';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
+import * as redisHelper from '../helpers/redisHelper.js';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -278,6 +279,15 @@ const testJWTpayload = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json(payload);
 };
 
+const testRedisSet = async (req: Request, res: Response): Promise<void> => {
+  try {
+    await redisHelper.setData('testRedisset', 'token');
+    res.status(200).json('ok');
+  } catch (err) {
+    throw err;
+  }
+};
+
 const router = express.Router();
 router.get('/selectall', testMysqlSelectAll);
 router.get('/select', testMysqlSelect);
@@ -288,5 +298,6 @@ router.get('/ck', testcheckValue);
 router.get('/supabase', testSupabaseSelect);
 router.get('/testjwtpayload', testJWTpayload);
 router.get('/supabase2', testSupabaseSelect2);
+router.get('/testRedisSet', testRedisSet);
 
 export default router;

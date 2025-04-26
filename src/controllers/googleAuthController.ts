@@ -40,27 +40,35 @@ export const verifyGoogleIdToken = async (req: Request, res: Response, next: Nex
   try {
     const parseResult = GoogleCredentialSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res
-        .status(400)
-        .json({ success: false, message: '格式錯誤', errordetail: parseResult.error.flatten() });
+      return res.status(400).json({
+        success: false,
+        message: 'request body格式錯誤',
+        errordetail: parseResult.error.flatten(),
+      });
     }
-    const credential = parseResult.data.credential;
+
+    // 驗證 CSRF token
     const csrfFromCookie = req.cookies['g_csrf_token'];
     const csrfFromBody = parseResult.data.g_csrf_token;
-
-    if (!csrfFromCookie) {
-      return res.status(400).json({ success: false, message: '缺少 CSRF Cookie' });
+    const csrfCheckResult = await googleAuthService.CheckDoubleSubmitCSRF(
+      csrfFromCookie,
+      csrfFromBody,
+    );
+    if (csrfCheckResult.success === false) {
+      return res
+        .status(csrfCheckResult.statusCode)
+        .json({ success: false, message: csrfCheckResult.message });
     }
 
-    // Double-submit CSRF 驗證
-    if (csrfFromCookie !== csrfFromBody) {
-      return res.status(403).json({ success: false, message: 'CSRF token 不一致' });
-    }
-
-    const transportResult = await googleAuthService.verifyGoogleIdToken(credential);
+    const credential = parseResult.data.credential;
+    const verifyGoogleIdResult = await googleAuthService.verifyGoogleIdToken(credential);
     res
-      .status(transportResult.statusCode)
-      .json({ success: true, message: transportResult.message, data: transportResult.data });
+      .status(verifyGoogleIdResult.statusCode)
+      .json({
+        success: true,
+        message: verifyGoogleIdResult.message,
+        data: verifyGoogleIdResult.data,
+      });
   } catch (error) {
     if (error instanceof Error) {
       next(new ApiError(401, error.message, error.stack, error.name));

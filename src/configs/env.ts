@@ -19,6 +19,7 @@ const envSchema = z.object({
   ecpayHashIV: z.string(),
   linepayapi_ChannelID: z.string(),
   linepayapi_ChannelSecretKey: z.string(),
+  rediscloud_freedb_pw: z.string(),
 });
 
 // 驗證並解析環境變數
