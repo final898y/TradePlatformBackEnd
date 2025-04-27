@@ -55,4 +55,4 @@ process.on('SIGTERM', async () => {
   console.log('Redis connection closed.');
 });
 
-export { setData, getData };
+export { client, setData, getData };

@@ -12,6 +12,13 @@ import config from './configs/configIndex.js';
 
 import IndexRouter from './routers/indexRouter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { gracefulShutdown } from './utility/shutdown.js';
+import { client as redisClient } from './helpers/redisHelper.js';
+
+// 🔥 定義變數，方便後續 shutdown
+let httpsServer: https.Server | undefined;
+let httpServer: http.Server | undefined;
+let server: http.Server | undefined;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -52,7 +59,7 @@ if (env.NODE_ENV === 'development') {
   const privateKey = fs.readFileSync(path.join(__dirname, 'key.pem'));
   const certificate = fs.readFileSync(path.join(__dirname, 'cert.crt'));
 
-  const httpsServer = https.createServer(
+  httpsServer = https.createServer(
     {
       key: privateKey,
       cert: certificate,
@@ -63,7 +70,7 @@ if (env.NODE_ENV === 'development') {
     console.log(`Example app listening at https://localhost:${httpsport}`);
   });
 
-  const httpServer = http.createServer((req, res) => {
+  httpServer = http.createServer((req, res) => {
     const redirectUrl = `https://localhost:${httpsport}${req.url}`;
     res.writeHead(301, { Location: redirectUrl });
     res.end();
@@ -73,7 +80,15 @@ if (env.NODE_ENV === 'development') {
   });
 } else {
   const port = process.env.PORT || 3000;
-  app.listen(port, () => {
+  server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
 }
+
+// 優雅關閉
+process.on('SIGINT', () =>
+  gracefulShutdown({ servers: [server, httpsServer, httpServer], redisClient: redisClient }),
+);
+process.on('SIGTERM', () =>
+  gracefulShutdown({ servers: [server, httpsServer, httpServer], redisClient: redisClient }),
+);

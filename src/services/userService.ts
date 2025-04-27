@@ -6,6 +6,7 @@ import * as ValidateData from '../utility/validateData.js';
 import generateID from '../utility/IDGenerater.js';
 import { ValidateHash } from '../utility/hashData.js';
 import * as JwtHelper from '../helpers/jwtHelper.js';
+import env from '../configs/env.js';
 
 async function GetAllUsers(): Promise<ItransportResult> {
   const userDetailArray = await UserRepository.GetAllUsers();
@@ -124,8 +125,13 @@ async function Login(req: Request): Promise<ItransportResult> {
       );
       if (results.length !== 0) {
         const selectUser = results[0] as Record<string, any>;
+        const jwtKey = env.ACCESS_TOKEN_SECRET;
         if (await ValidateHash(validateResult.Password, selectUser.Password)) {
-          const JwtToken = await JwtHelper.createJwt(validateResult.MobilePhone, selectUser.email);
+          const JwtToken = await JwtHelper.createJwt(
+            validateResult.MobilePhone,
+            selectUser.email,
+            jwtKey,
+          );
           return {
             success: true,
             statusCode: 200,

@@ -64,4 +64,5 @@ type User = z.infer<typeof UserSchema>;
 //   return user;
 // }
 
-export { User, UserSchema,userStatusEnum };
+export { UserSchema, userStatusEnum };
+export type { User };
