@@ -1,43 +1,61 @@
-import { SignJWT, jwtVerify } from 'jose';
-import * as redisHelper from './redisHelper.js';
+import * as jose from 'jose';
+import ItransportResult from '../model/transportModel.js';
 
 async function createJwt(mobilephone: string, email: string, jwtKey: string): Promise<string> {
-  const payload = { mobilephone, email };
+  try {
+    const payload = { mobilephone, email };
 
-  // 將密鑰 (string) 轉換為 Uint8Array
-  const encoder = new TextEncoder();
-  const secretKey = encoder.encode(jwtKey);
+    // 將密鑰 (string) 轉換為 Uint8Array
+    const secretKey = new TextEncoder().encode(jwtKey);
 
-  // 使用 jose 進行簽名
-  const token = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' }) // 設定演算法
-    .setExpirationTime('1d') // 設定過期時間
-    .sign(secretKey); // 使用密鑰簽名
-
-  await redisHelper.setData(mobilephone, token);
-  return token;
+    // 使用 jose 進行簽名
+    const token = await new jose.SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256' }) // 設定演算法
+      .setExpirationTime('1d') // 設定過期時間
+      .sign(secretKey); // 使用密鑰簽名
+    return token;
+  } catch (error) {
+    if (error instanceof jose.errors.JOSEError) {
+      console.error(`JOSEError occurred: ${error.code}: ${error.message}`);
+    } else {
+      console.error(`An unexpected error occurred: ${JSON.stringify(error)}`);
+    }
+    throw error;
+  }
 }
 
-async function verifyJwt(token: string, jwtKey: string): Promise<boolean> {
+async function verifyJwt(token: string, jwtKey: string): Promise<ItransportResult<string>> {
   try {
     // 將密鑰 (string) 轉換為 Uint8Array
-    const encoder = new TextEncoder();
-    const secretKey = encoder.encode(jwtKey);
+    const secretKey = new TextEncoder().encode(jwtKey);
 
     // 使用 jose 進行驗證
-    const { payload } = await jwtVerify(token, secretKey, { algorithms: ['HS256'] });
-
-    // 檢查有效性
-    if (typeof payload.MobilePhone === 'string') {
-      const checkJwtToken = await redisHelper.getData(payload.MobilePhone);
-      if (checkJwtToken.success) {
-        return true;
-      }
+    const { payload } = await jose.jwtVerify(token, secretKey, { algorithms: ['HS256'] });
+    if (payload.mobilephone && typeof payload.mobilephone === 'string') {
+      return {
+        success: true,
+        statusCode: 200,
+        message: '驗證成功',
+        data: payload.mobilephone,
+      };
+    } else {
+      return {
+        success: true,
+        statusCode: 401,
+        message: '驗證失敗',
+      };
     }
-    return false;
   } catch (error) {
-    console.log(`verifyJwt Error : ${JSON.stringify(error)}`);
-    return false;
+    if (error instanceof jose.errors.JWTExpired) {
+      console.error(
+        `JWT is expired.: ${error.code}: ${error.claim}: ${error.reason}:${error.message}`,
+      );
+    } else if (error instanceof jose.errors.JWTInvalid) {
+      console.error(`JWT is invalid.: ${error.code}:${error.message}`);
+    } else {
+      console.error(`An unexpected error occurred: ${JSON.stringify(error)}`);
+    }
+    throw error;
   }
 }
 

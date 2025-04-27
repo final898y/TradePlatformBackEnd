@@ -6,6 +6,7 @@ import * as ValidateData from '../utility/validateData.js';
 import generateID from '../utility/IDGenerater.js';
 import { ValidateHash } from '../utility/hashData.js';
 import * as JwtHelper from '../helpers/jwtHelper.js';
+import * as redisHelper from '../helpers/redisHelper.js';
 import env from '../configs/env.js';
 
 async function GetAllUsers(): Promise<ItransportResult> {
@@ -132,6 +133,7 @@ async function Login(req: Request): Promise<ItransportResult> {
             selectUser.email,
             jwtKey,
           );
+          await redisHelper.setData(validateResult.MobilePhone, JwtToken);
           return {
             success: true,
             statusCode: 200,

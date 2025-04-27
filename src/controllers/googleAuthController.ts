@@ -23,6 +23,9 @@ export const getCsrfToken = async (req: Request, res: Response, next: NextFuncti
       res.status(200).json({ success: true, message: '建立 CSRF Token 成功', data: csrfToken });
     }
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
@@ -62,14 +65,15 @@ export const verifyGoogleIdToken = async (req: Request, res: Response, next: Nex
 
     const credential = parseResult.data.credential;
     const verifyGoogleIdResult = await googleAuthService.verifyGoogleIdToken(credential);
-    res
-      .status(verifyGoogleIdResult.statusCode)
-      .json({
-        success: true,
-        message: verifyGoogleIdResult.message,
-        data: verifyGoogleIdResult.data,
-      });
+    res.status(verifyGoogleIdResult.statusCode).json({
+      success: true,
+      message: verifyGoogleIdResult.message,
+      data: verifyGoogleIdResult.data,
+    });
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(401, error.message, error.stack, error.name));
     } else {
