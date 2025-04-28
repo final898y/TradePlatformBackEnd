@@ -1,6 +1,16 @@
-import * as linepayHelper from '../helpers/linepayHelper.js';
-import * as payModel from '../model/payModel.js';
-import { vi, test, expect } from 'vitest'; // 引入 Vitest 的功能
+import * as linepayHelper from '@/helpers/linepayHelper.js';
+import * as payModel from '@/model/payModel.js';
+import { vi, test, expect } from 'vitest';
+
+// Mock the config module
+vi.mock('@/configs/configIndex.js', () => ({
+  default: {
+    linepayredirectUrls: {
+      confirmUrl: 'http://localhost:5173/linepay/confirm',
+      cancelUrl: 'http://localhost:5173/linepay/cancel',
+    },
+  },
+}));
 
 test('產生Line payments request body', () => {
   // arrange

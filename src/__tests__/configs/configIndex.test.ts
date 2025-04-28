@@ -14,7 +14,7 @@ describe('configIndex', () => {
 
   it('should load production config when NODE_ENV is production', async () => {
     process.env.NODE_ENV = 'production';
-    const config = (await import('../configs/configIndex.js')).default;
+    const config = (await import('../../configs/configIndex.js')).default;
 
     expect(config.linepayredirectUrls.confirmUrl).toBe(
       'https://shopping-web-grok.vercel.app/linepay/confirm',
@@ -29,7 +29,7 @@ describe('configIndex', () => {
 
   it('should load development config when NODE_ENV is not production', async () => {
     process.env.NODE_ENV = 'development';
-    const config = (await import('../configs/configIndex.js')).default;
+    const config = (await import('../../configs/configIndex.js')).default;
 
     expect(config.linepayredirectUrls.confirmUrl).toBe('http://localhost:5173/linepay/confirm');
     expect(config.linepayredirectUrls.cancelUrl).toBe('http://localhost:5173/linepay/cancel');
@@ -39,7 +39,7 @@ describe('configIndex', () => {
   });
   it('should load development config when NODE_ENV is undefined', async () => {
     process.env.NODE_ENV = undefined; // 模擬 NODE_ENV 為 undefined
-    const config = (await import('../configs/configIndex.js')).default;
+    const config = (await import('../../configs/configIndex.js')).default;
 
     expect(config.linepayredirectUrls.confirmUrl).toBe('http://localhost:5173/linepay/confirm');
     expect(config.linepayredirectUrls.cancelUrl).toBe('http://localhost:5173/linepay/cancel');

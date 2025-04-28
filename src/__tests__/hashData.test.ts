@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Hashdata, ValidateHash } from '../utility/hashData.js';
+import { Hashdata, ValidateHash } from '@/utility/hashData.js';
 
 describe('bcrypt hashing functions', () => {
   const plainPassword = 'mySecret123';
