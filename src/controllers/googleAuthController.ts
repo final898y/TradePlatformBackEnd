@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { ApiError } from '@/middlewares/errorHandler.js';
-import * as googleAuthService from '@/services/googleAuthService.js';
-import * as authService from '@/services/authService.js';
+import { ApiError } from '../middlewares/errorHandler.js';
+import * as googleAuthService from '../services/googleAuthService.js';
+import * as authService from '../services/authService.js';
 
 // 產生並回傳 CSRF token，設為 cookie
 export const getCsrfToken = async (req: Request, res: Response, next: NextFunction) => {
