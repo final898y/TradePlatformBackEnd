@@ -1,7 +1,12 @@
 import * as jose from 'jose';
 import ItransportResult from '../model/transportModel.js';
 
-async function createJwt(mobilephone: string, email: string, jwtKey: string): Promise<string> {
+async function createJwt(
+  mobilephone: string,
+  email: string,
+  jwtKey: string,
+  expiration: string,
+): Promise<string> {
   try {
     const payload = { mobilephone, email };
 
@@ -11,7 +16,7 @@ async function createJwt(mobilephone: string, email: string, jwtKey: string): Pr
     // 使用 jose 進行簽名
     const token = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg: 'HS256' }) // 設定演算法
-      .setExpirationTime('1d') // 設定過期時間
+      .setExpirationTime(expiration) // 設定過期時間
       .sign(secretKey); // 使用密鑰簽名
     return token;
   } catch (error) {

@@ -27,10 +27,10 @@ async function authenticateToken(req: Request, res: Response, next: NextFunction
         if (checkJwtExistResult.success) {
           next();
         } else {
-          return res.status(403).send('Invalid token');
+          return res.status(401).send('Invalid token');
         }
       } else {
-        return res.status(403).send('Invalid token');
+        return res.status(401).send('Invalid token');
       }
     } catch (error) {
       console.error(error); // 記錄錯誤

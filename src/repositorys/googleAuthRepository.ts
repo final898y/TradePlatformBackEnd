@@ -30,7 +30,7 @@ export const verifyGoogleIdToken = async (googlesub: string): Promise<Itransport
     // 查 users 表，找該 id 的 email
     const { data: userData, error: userError } = await supaBaseHelper.supabase
       .from('users')
-      .select('cellphone')
+      .select('mobilephone')
       .eq('id', authData.id)
       .single(); // 預期只會一筆
 
@@ -42,11 +42,11 @@ export const verifyGoogleIdToken = async (googlesub: string): Promise<Itransport
       };
     }
 
-    if (!userData?.cellphone) {
+    if (!userData?.mobilephone) {
       return {
         success: false,
         statusCode: 400,
-        message: 'users: email not found',
+        message: 'users: mobilephone not found',
       };
     }
 
@@ -54,8 +54,8 @@ export const verifyGoogleIdToken = async (googlesub: string): Promise<Itransport
     return {
       success: true,
       statusCode: 200,
-      message: 'get user email',
-      data: userData.cellphone,
+      message: 'get user mobilephone',
+      data: userData.mobilephone,
     };
   } catch (e: any) {
     return {

@@ -42,9 +42,16 @@ const googleIdTokenPayloadSchema = z.object({
 
 type googleJWTPayload = z.infer<typeof googleIdTokenPayloadSchema>;
 
+const userPhoneEmailSchema = z.object({
+  mobilephone: z.string(),
+  email: z.string(),
+});
+
+type userPhoneEmail = z.infer<typeof userPhoneEmailSchema>;
+
 export const verifyGoogleIdToken = async (
   credential: string,
-): Promise<ItransportResult<string>> => {
+): Promise<ItransportResult<userPhoneEmail>> => {
   try {
     const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
     const { payload } = await jwtVerify(credential, GOOGLE_JWKS, {
@@ -64,7 +71,10 @@ export const verifyGoogleIdToken = async (
       success: true,
       statusCode: 200,
       message: 'This Google Account is registered.',
-      data: gooleIDChecked.data,
+      data: {
+        mobilephone: gooleIDChecked.data, //userData.mobilephone
+        email: parsedPayload.email,
+      },
     };
   } catch (error) {
     throw error;

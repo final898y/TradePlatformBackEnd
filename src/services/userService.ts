@@ -132,6 +132,7 @@ async function Login(req: Request): Promise<ItransportResult> {
             validateResult.MobilePhone,
             selectUser.email,
             jwtKey,
+            '1h',
           );
           await redisHelper.setData(validateResult.MobilePhone, JwtToken);
           return {

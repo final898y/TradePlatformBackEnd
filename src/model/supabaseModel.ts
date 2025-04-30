@@ -62,30 +62,30 @@ export type Database = {
       };
       users: {
         Row: {
-          cellphone: string;
           created_at: string | null;
           email: string | null;
           id: number;
+          mobilephone: string;
           name: string | null;
           password_hash: string | null;
           updated_at: string | null;
           uuid: string;
         };
         Insert: {
-          cellphone?: string;
           created_at?: string | null;
           email?: string | null;
           id?: number;
+          mobilephone?: string;
           name?: string | null;
           password_hash?: string | null;
           updated_at?: string | null;
           uuid: string;
         };
         Update: {
-          cellphone?: string;
           created_at?: string | null;
           email?: string | null;
           id?: number;
+          mobilephone?: string;
           name?: string | null;
           password_hash?: string | null;
           updated_at?: string | null;
