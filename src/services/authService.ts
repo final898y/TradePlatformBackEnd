@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import ItransportResult from '@/model/transportModel.js';
-import * as jwtHelper from '@/helpers/jwtHelper.js';
-import env from '@/configs/env.js';
+import ItransportResult from '../model/transportModel.js';
+import * as jwtHelper from '../helpers/jwtHelper.js';
+import env from '../configs/env.js';
 
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = env;
 const AccessAndRefreshTokenSchema = z.object({
