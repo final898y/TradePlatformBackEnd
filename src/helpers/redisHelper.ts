@@ -26,10 +26,16 @@ async function initializeRedis() {
 // 在模組載入時初始化連線
 initializeRedis().catch((err) => console.error('Redis initialization failed:', err));
 
-async function setData(key: string, value: string, ttlSeconds: number = 3600) {
+async function setData(key: string, value: string, ttlSeconds: number = 3600): Promise<boolean> {
   try {
     await initializeRedis();
-    await client.set(key, value, { EX: ttlSeconds }); // 設置 1 小時過期
+    const result = await client.set(key, value, { EX: ttlSeconds }); // 設置 1 小時過期
+    if (result === 'OK') {
+      return true;
+    } else {
+      console.warn('Redis SET returned unexpected result:', result);
+      return false;
+    }
   } catch (err) {
     console.error('Set data error:', err);
     throw err;

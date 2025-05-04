@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ApiError } from '../middlewares/errorHandler.js';
 import * as googleAuthService from '../services/googleAuthService.js';
 import * as authService from '../services/authService.js';
+import * as redisHelper from '../helpers/redisHelper.js';
 
 // 產生並回傳 CSRF token，設為 cookie
 export const getCsrfToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -80,7 +81,22 @@ export const verifyGoogleIdToken = async (req: Request, res: Response, next: Nex
     if (getJWTResult.success === false || !getJWTResult.data) {
       return res.status(500).json({ success: false, message: 'Get Token Error' });
     }
-
+    //將JWT token 存入redis
+    const [accessSuccess, refreshSuccess] = await Promise.all([
+      redisHelper.setData(
+        `${verifyGoogleIdResult.data.mobilephone}tpaccessToken`,
+        getJWTResult.data.accessToken,
+        15 * 60,
+      ),
+      redisHelper.setData(
+        `${verifyGoogleIdResult.data.mobilephone}tprefreshToken`,
+        getJWTResult.data.refreshToken,
+        7 * 24 * 60 * 60,
+      ),
+    ]);
+    if (!accessSuccess || !refreshSuccess) {
+      return res.status(500).json({ success: false, message: 'Set Token Error' });
+    }
     //驗證完成後回傳資料
     res.cookie('tpaccessToken', getJWTResult.data.accessToken, {
       httpOnly: true,

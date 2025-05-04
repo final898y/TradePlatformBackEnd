@@ -15,6 +15,7 @@ import { Database, Tables } from '../model/supabaseModel.js';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
 import * as redisHelper from '../helpers/redisHelper.js';
+import authenticateToken from '../middlewares/authorization.js';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -298,6 +299,6 @@ router.get('/ck', testcheckValue);
 router.get('/supabase', testSupabaseSelect);
 router.get('/testjwtpayload', testJWTpayload);
 router.get('/supabase2', testSupabaseSelect2);
-router.get('/testRedisSet', testRedisSet);
+router.get('/testRedisSet', authenticateToken, testRedisSet);
 
 export default router;

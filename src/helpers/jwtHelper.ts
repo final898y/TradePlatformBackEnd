@@ -1,5 +1,7 @@
 import * as jose from 'jose';
+import { z } from 'zod';
 import ItransportResult from '../model/transportModel.js';
+import * as authModel from '../model/authModel.js';
 
 async function createJwt(
   mobilephone: string,
@@ -29,23 +31,31 @@ async function createJwt(
   }
 }
 
-async function verifyJwt(token: string, jwtKey: string): Promise<ItransportResult<string>> {
+async function verifyJwt(
+  token: string,
+  jwtKey: string,
+): Promise<ItransportResult<authModel.tpjwtPayload>> {
   try {
     // 將密鑰 (string) 轉換為 Uint8Array
     const secretKey = new TextEncoder().encode(jwtKey);
 
     // 使用 jose 進行驗證
     const { payload } = await jose.jwtVerify(token, secretKey, { algorithms: ['HS256'] });
-    if (payload.mobilephone && typeof payload.mobilephone === 'string') {
+    if (
+      payload.mobilephone &&
+      typeof payload.mobilephone === 'string' &&
+      payload.email &&
+      typeof payload.email === 'string'
+    ) {
       return {
         success: true,
         statusCode: 200,
         message: '驗證成功',
-        data: payload.mobilephone,
+        data: { mobilephone: payload.mobilephone, email: payload.email },
       };
     } else {
       return {
-        success: true,
+        success: false,
         statusCode: 401,
         message: '驗證失敗',
       };
@@ -55,12 +65,22 @@ async function verifyJwt(token: string, jwtKey: string): Promise<ItransportResul
       console.error(
         `JWT is expired.: ${error.code}: ${error.claim}: ${error.reason}:${error.message}`,
       );
+      return {
+        success: true,
+        statusCode: 401,
+        message: 'JWT is expired',
+      };
     } else if (error instanceof jose.errors.JWTInvalid) {
       console.error(`JWT is invalid.: ${error.code}:${error.message}`);
+      return {
+        success: false,
+        statusCode: 401,
+        message: 'JWT is invalid',
+      };
     } else {
       console.error(`An unexpected error occurred: ${JSON.stringify(error)}`);
+      throw error;
     }
-    throw error;
   }
 }
 
