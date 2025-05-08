@@ -55,10 +55,26 @@ async function getData(key: string): Promise<ItransportResult<string>> {
   }
 }
 
+async function deleteData(key: string): Promise<void> {
+  try {
+    await initializeRedis();
+    const deleteCount = await client.del(key);
+
+    if (deleteCount > 0) {
+      console.log(`成功刪除 Redis key: ${key}`);
+    } else {
+      console.log(`Redis key ${key} 不存在，可能已過期或已被刪除`);
+    }
+  } catch (err) {
+    console.error('delete data error:', err);
+    throw err;
+  }
+}
+
 // 應用關閉時斷開連線
 process.on('SIGTERM', async () => {
   await client.quit();
   console.log('Redis connection closed.');
 });
 
-export { client, setData, getData };
+export { client, setData, getData, deleteData };

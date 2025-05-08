@@ -6,6 +6,8 @@ import * as AuthController from '../controllers/AuthController.js';
 const router = express.Router();
 
 router.post('/verifyGoogleIdToken', wrapAsync(googleAuthController.verifyGoogleIdToken));
-router.get('/getCsrfToken', wrapAsync(googleAuthController.getCsrfToken));
-router.get('/refresh', wrapAsync(AuthController.refresh));
+router.get('/getCsrfToken', wrapAsync(AuthController.getCsrfToken));
+router.post('/refresh', wrapAsync(AuthController.refresh));
+router.post('/logout', wrapAsync(AuthController.logout));
+
 export default router;
