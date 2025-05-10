@@ -26,6 +26,10 @@ const pool = mysql.createPool({
   rowsAsArray: true,
 });
 
+const testWebsite = async (req: Request, res: Response): Promise<void> => {
+  res.status(200).json('ok');
+};
+
 const testZOD = async (req: Request, res: Response): Promise<void> => {
   const validateResult = await ValidateRegisterData(req);
   if (typeof validateResult === 'string') {
@@ -300,5 +304,5 @@ router.get('/supabase', testSupabaseSelect);
 router.get('/testjwtpayload', testJWTpayload);
 router.get('/supabase2', testSupabaseSelect2);
 router.get('/testRedisSet', authenticateToken, testRedisSet);
-
+router.get('/testwebsite', testWebsite);
 export default router;

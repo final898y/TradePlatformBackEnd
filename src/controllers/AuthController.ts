@@ -39,8 +39,12 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
   try {
     const accessToken = req.cookies['tpaccessToken'];
     const refreshToken = req.cookies['tprefreshToken'];
-    if ((!accessToken && !refreshToken) || (accessToken && !refreshToken)) {
-      res.status(500).json({ success: false, message: 'Not have token' });
+    if (!accessToken && !refreshToken) {
+      console.log('Access token and refresh token both missing');
+      res.status(500).json({ success: false, message: 'Missing accessToken and refreshToken' });
+    } else if (accessToken && !refreshToken) {
+      console.log('Refresh token is missing');
+      res.status(500).json({ success: false, message: 'Missing refreshToken' });
     }
 
     const isVerified = await authService.verifyToken(accessToken, refreshToken);
