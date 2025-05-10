@@ -55,7 +55,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
         res.cookie('tpaccessToken', isVerified.data, {
           httpOnly: true,
           secure: true, // 開發環境設為 false，生產環境應設為 true
-          sameSite: 'strict',
+          sameSite: 'none',
           maxAge: 15 * 60 * 1000, // 15 分鐘
         });
         res.status(isVerified.statusCode).json({ success: true, message: isVerified.message });
