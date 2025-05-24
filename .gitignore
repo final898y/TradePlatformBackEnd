@@ -1,3 +1,6 @@
 node_modules/
 build/
 .env*
+src/cert.crt
+src/key.pem
+*.log

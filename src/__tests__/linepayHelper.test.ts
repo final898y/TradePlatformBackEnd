@@ -1,8 +1,19 @@
 import * as linepayHelper from '../helpers/linepayHelper.js';
 import * as payModel from '../model/payModel.js';
+import { vi, test, expect } from 'vitest';
+
+// Mock the config module
+vi.mock('../configs/configIndex.js', () => ({
+  default: {
+    linepayredirectUrls: {
+      confirmUrl: 'http://localhost:5173/linepay/confirm',
+      cancelUrl: 'http://localhost:5173/linepay/cancel',
+    },
+  },
+}));
 
 test('產生Line payments request body', () => {
-  //arrange
+  // arrange
   const input = {
     name: 'Pen Brown',
     quantity: 2,
@@ -36,8 +47,10 @@ test('產生Line payments request body', () => {
       },
     },
   } as payModel.linePayPRInputOption;
+
   // act
   const result = linepayHelper.createLinePRrequestOption(input);
-  //asser
+
+  // assert
   expect(result).toStrictEqual(expectedResult);
 });

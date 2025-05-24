@@ -59,10 +59,5 @@ function ZodErrorHandling(zoderror: ZodError<ValidateRegister>): string {
   const zodErrorString = zodErrorFormatArray.join('、');
   return '輸入資料有下列錯誤，請進行修正：「' + zodErrorString + '」';
 }
-export {
-  ValidateRegisterData,
-  ValidatePartialUserData,
-  ZodErrorHandling,
-  ValidateUserData,
-  ValidateUserPartial,
-};
+export { ValidateRegisterData, ValidatePartialUserData, ZodErrorHandling, ValidateUserData };
+export type { ValidateUserPartial };

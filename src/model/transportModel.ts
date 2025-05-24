@@ -1,7 +1,7 @@
-export default interface ItransportResult {
+export default interface ItransportResult<T = unknown> {
   success: boolean;
   statusCode: number;
   message: string;
-  data?: object;
+  data?: T; // 用泛型 T 代表資料結構
   JwtToken?: string;
 }

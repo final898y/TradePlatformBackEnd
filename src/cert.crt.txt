@@ -1,0 +1,2 @@
+請自行放置cert.crt和key.pem以正確啟用https服務器
+Please make sure to place the cert.crt and key.pem files in the correct location to properly enable the HTTPS server.

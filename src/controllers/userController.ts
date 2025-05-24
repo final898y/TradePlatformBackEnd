@@ -7,6 +7,9 @@ const GetAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     const transportResult = await UserService.GetAllUsers();
     res.status(transportResult.statusCode).send(transportResult);
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
@@ -21,6 +24,9 @@ const GetUserDetail = async (req: Request, res: Response, next: NextFunction) =>
     const transportResult = await UserService.GetUserDetail(UID);
     res.status(transportResult.statusCode).send(transportResult);
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
@@ -34,6 +40,9 @@ const Register = async (req: Request, res: Response, next: NextFunction) => {
     const transportResult = await UserService.Register(req);
     res.status(transportResult.statusCode).json(transportResult.message);
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
@@ -48,6 +57,9 @@ const EditUser = async (req: Request, res: Response, next: NextFunction) => {
     const transportResult = await UserService.EditUser(req, UID);
     res.status(transportResult.statusCode).send(transportResult.message);
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
@@ -64,6 +76,9 @@ const Login = async (req: Request, res: Response, next: NextFunction) => {
       JwtToket: transportResult.JwtToken,
     });
   } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
