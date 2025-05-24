@@ -4,6 +4,7 @@ import { ApiError } from '../middlewares/errorHandler.js';
 import * as googleAuthService from '../services/googleAuthService.js';
 import * as authService from '../services/authService.js';
 import * as redisHelper from '../helpers/redisHelper.js';
+import config from '../configs/configIndex.js';
 
 const GoogleCredentialSchema = z.object({
   credential: z.string(),
@@ -64,18 +65,12 @@ export const verifyGoogleIdToken = async (req: Request, res: Response, next: Nex
       return res.status(500).json({ success: false, message: 'Set Token Error' });
     }
     //驗證完成後回傳資料
-    res.cookie('tpaccessToken', getJWTResult.data.accessToken, {
-      httpOnly: true,
-      secure: true, // 開發環境設為 false，生產環境應設為 true
-      sameSite: 'none',
-      maxAge: 15 * 60 * 1000, // 15 分鐘
-    });
-    res.cookie('tprefreshToken', getJWTResult.data.refreshToken, {
-      httpOnly: true,
-      secure: true, // 開發環境設為 false，生產環境應設為 true
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 天
-    });
+    res.cookie('tpaccessToken', getJWTResult.data.accessToken, config.tpaccessTokenCookieOptions);
+    res.cookie(
+      'tprefreshToken',
+      getJWTResult.data.refreshToken,
+      config.tprefreshTokenCookieOptions,
+    );
     res.status(200).json({
       success: true,
       message: 'Google ID Token 驗證成功',

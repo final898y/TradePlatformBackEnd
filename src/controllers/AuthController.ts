@@ -3,6 +3,7 @@ import { ApiError } from '../middlewares/errorHandler.js';
 import * as authService from '../services/authService.js';
 import * as redisHelper from '../helpers/redisHelper.js';
 import { z } from 'zod';
+import config from '../configs/configIndex.js';
 
 // 產生並回傳 CSRF token，設為 cookie
 export const getCsrfToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,12 +16,7 @@ export const getCsrfToken = async (req: Request, res: Response, next: NextFuncti
         message: '伺服器錯誤，無法建立 CSRF Token，請稍後再試。',
       });
     } else {
-      res.cookie('g_csrf_token', csrfToken, {
-        httpOnly: false, // 讓前端可讀取
-        sameSite: 'none', // 跨網域用
-        secure: true, // 必須用 HTTPS
-        maxAge: 3 * 60 * 1000, // 有效時間：3分鐘
-      });
+      res.cookie('g_csrf_token', csrfToken, config.csrfCookieOptions);
       res.status(200).json({ success: true, message: '建立 CSRF Token 成功', data: csrfToken });
     }
   } catch (error) {
@@ -52,12 +48,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       res.status(isVerified.statusCode).json({ success: false, message: isVerified.message });
     } else {
       if (isVerified.message === 'new accessToken') {
-        res.cookie('tpaccessToken', isVerified.data, {
-          httpOnly: true,
-          secure: true, // 開發環境設為 false，生產環境應設為 true
-          sameSite: 'none',
-          maxAge: 15 * 60 * 1000, // 15 分鐘
-        });
+        res.cookie('tpaccessToken', isVerified.data, config.tpaccessTokenCookieOptions);
         res.status(isVerified.statusCode).json({ success: true, message: isVerified.message });
       } else {
         res.status(isVerified.statusCode).json({ success: true, message: isVerified.message });
