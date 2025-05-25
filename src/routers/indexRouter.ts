@@ -1,4 +1,5 @@
 import express from 'express';
+import HealthRouter from './healthRouter.js';
 import UserRouter from './userRouter.js';
 import PayRouter from './payRouter.js';
 import TestRouter from './testRouter.js';
@@ -7,6 +8,8 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json' with { type: 'json' };
 
 const router = express.Router();
+
+router.use('/health', HealthRouter);
 
 router.use('/users', UserRouter);
 router.use('/pay', PayRouter);
