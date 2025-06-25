@@ -60,6 +60,223 @@ export type Database = {
           },
         ];
       };
+      cart_items: {
+        Row: {
+          added_at: string | null;
+          id: number;
+          product_id: number;
+          quantity: number;
+          user_id: number;
+        };
+        Insert: {
+          added_at?: string | null;
+          id?: number;
+          product_id: number;
+          quantity: number;
+          user_id: number;
+        };
+        Update: {
+          added_at?: string | null;
+          id?: number;
+          product_id?: number;
+          quantity?: number;
+          user_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'cart_items_product_id_fkey';
+            columns: ['product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'cart_items_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      categories: {
+        Row: {
+          id: number;
+          name: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      order_items: {
+        Row: {
+          id: number;
+          order_id: number;
+          product_id: number;
+          quantity: number;
+          unit_price: number;
+        };
+        Insert: {
+          id?: number;
+          order_id: number;
+          product_id: number;
+          quantity: number;
+          unit_price: number;
+        };
+        Update: {
+          id?: number;
+          order_id?: number;
+          product_id?: number;
+          quantity?: number;
+          unit_price?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'order_items_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'order_items_product_id_fkey';
+            columns: ['product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      orders: {
+        Row: {
+          created_at: string | null;
+          id: number;
+          payment_method: string;
+          recipient_name: string;
+          recipient_phone: string;
+          shipping_address: string;
+          status: string;
+          total_amount: number;
+          user_id: number;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: number;
+          payment_method: string;
+          recipient_name: string;
+          recipient_phone: string;
+          shipping_address: string;
+          status: string;
+          total_amount: number;
+          user_id: number;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: number;
+          payment_method?: string;
+          recipient_name?: string;
+          recipient_phone?: string;
+          shipping_address?: string;
+          status?: string;
+          total_amount?: number;
+          user_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'orders_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      products: {
+        Row: {
+          category_id: number;
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          name: string;
+          price: number;
+          stock: number;
+          sub_category_id: number;
+          updated_at: string | null;
+        };
+        Insert: {
+          category_id: number;
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          name: string;
+          price: number;
+          stock: number;
+          sub_category_id: number;
+          updated_at?: string | null;
+        };
+        Update: {
+          category_id?: number;
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          name?: string;
+          price?: number;
+          stock?: number;
+          sub_category_id?: number;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'products_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'products_sub_category_id_fkey';
+            columns: ['sub_category_id'];
+            isOneToOne: false;
+            referencedRelation: 'sub_categories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      sub_categories: {
+        Row: {
+          category_id: number;
+          id: number;
+          name: string;
+        };
+        Insert: {
+          category_id: number;
+          id?: number;
+          name: string;
+        };
+        Update: {
+          category_id?: number;
+          id?: number;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'sub_categories_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       users: {
         Row: {
           created_at: string | null;

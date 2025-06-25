@@ -14,8 +14,8 @@ const config: Config = {
   ],
   redisconfig: {
     username: 'default',
-    host: 'redis-15546.crce194.ap-seast-1-1.ec2.redns.redis-cloud.com',
-    port: 15546,
+    host: 'redis-11502.crce185.ap-seast-1-1.ec2.redns.redis-cloud.com',
+    port: 11502,
   },
   csrfCookieOptions: {
     httpOnly: false,
