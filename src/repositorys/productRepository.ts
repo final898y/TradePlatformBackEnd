@@ -66,7 +66,9 @@ export const getAllProducts = async (
     // 構建 Supabase 查詢
     let query = supaBaseHelper.supabase
       .from('products')
-      .select('id, name, price, description, stock, image_url, category_id, sub_category_id')
+      .select('id, name, price, description, stock, image_url, category_id, sub_category_id', {
+        count: 'exact',
+      })
       .range(from, to) // 分頁
       .order('id', { ascending: true });
 
