@@ -157,34 +157,40 @@ export type Database = {
         Row: {
           created_at: string | null;
           id: number;
+          paid_at: string | null;
           payment_method: string;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
           status: string;
           total_amount: number;
+          updated_at: string | null;
           user_id: number;
         };
         Insert: {
           created_at?: string | null;
           id?: number;
+          paid_at?: string | null;
           payment_method: string;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
           status: string;
           total_amount: number;
+          updated_at?: string | null;
           user_id: number;
         };
         Update: {
           created_at?: string | null;
           id?: number;
+          paid_at?: string | null;
           payment_method?: string;
           recipient_name?: string;
           recipient_phone?: string;
           shipping_address?: string;
           status?: string;
           total_amount?: number;
+          updated_at?: string | null;
           user_id?: number;
         };
         Relationships: [
@@ -197,6 +203,126 @@ export type Database = {
           },
         ];
       };
+      payments: {
+        Row: {
+          amount: number;
+          created_at: string | null;
+          id: number;
+          order_id: number | null;
+          paid_at: string | null;
+          payment_method: string;
+          status: string;
+          transaction_id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string | null;
+          id?: number;
+          order_id?: number | null;
+          paid_at?: string | null;
+          payment_method: string;
+          status: string;
+          transaction_id: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string | null;
+          id?: number;
+          order_id?: number | null;
+          paid_at?: string | null;
+          payment_method?: string;
+          status?: string;
+          transaction_id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'payments_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      product_specs: {
+        Row: {
+          created_at: string | null;
+          extra_price: number | null;
+          id: number;
+          product_id: number | null;
+          spec_name: string;
+          spec_value: string;
+          stock: number | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          extra_price?: number | null;
+          id?: number;
+          product_id?: number | null;
+          spec_name: string;
+          spec_value: string;
+          stock?: number | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          extra_price?: number | null;
+          id?: number;
+          product_id?: number | null;
+          spec_name?: string;
+          spec_value?: string;
+          stock?: number | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'product_specs_product_id_fkey';
+            columns: ['product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      product_status_history: {
+        Row: {
+          id: number;
+          operated_at: string | null;
+          operated_by: string | null;
+          product_id: number;
+          reason: string | null;
+          status: string;
+        };
+        Insert: {
+          id?: number;
+          operated_at?: string | null;
+          operated_by?: string | null;
+          product_id: number;
+          reason?: string | null;
+          status: string;
+        };
+        Update: {
+          id?: number;
+          operated_at?: string | null;
+          operated_by?: string | null;
+          product_id?: number;
+          reason?: string | null;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'product_status_history_product_id_fkey';
+            columns: ['product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       products: {
         Row: {
           category_id: number;
@@ -204,10 +330,14 @@ export type Database = {
           description: string | null;
           id: number;
           image_url: string | null;
+          is_deleted: boolean;
+          is_published: boolean;
           name: string;
           price: number;
+          publish_at: string | null;
           stock: number;
           sub_category_id: number;
+          unpublish_at: string | null;
           updated_at: string | null;
         };
         Insert: {
@@ -216,10 +346,14 @@ export type Database = {
           description?: string | null;
           id?: number;
           image_url?: string | null;
+          is_deleted?: boolean;
+          is_published?: boolean;
           name: string;
           price: number;
+          publish_at?: string | null;
           stock: number;
           sub_category_id: number;
+          unpublish_at?: string | null;
           updated_at?: string | null;
         };
         Update: {
@@ -228,10 +362,14 @@ export type Database = {
           description?: string | null;
           id?: number;
           image_url?: string | null;
+          is_deleted?: boolean;
+          is_published?: boolean;
           name?: string;
           price?: number;
+          publish_at?: string | null;
           stock?: number;
           sub_category_id?: number;
+          unpublish_at?: string | null;
           updated_at?: string | null;
         };
         Relationships: [

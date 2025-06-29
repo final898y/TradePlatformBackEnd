@@ -3,11 +3,6 @@ import ItransportResult from '../model/transportModel.js';
 import { Request } from 'express';
 import * as productModel from '../model/productModel.js';
 
-const parseNumberParam = (param: string | undefined, defaultValue: number): number => {
-  const num = parseInt(param || '');
-  return isNaN(num) || num < 1 ? defaultValue : num;
-};
-
 export const getAllProducts = async (
   req: Request,
 ): Promise<ItransportResult<productModel.ProductListResponse>> => {
@@ -43,12 +38,8 @@ export const getAllProducts = async (
       message: 'Get ProductList',
       data: results.data,
     };
-  } catch (e: any) {
-    return {
-      success: false,
-      statusCode: 500,
-      message: `unexpected error: ${e.message}`,
-    };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -86,11 +77,7 @@ export const getProductByID = async (
       message: 'Get Product Detail',
       data: results.data,
     };
-  } catch (e: any) {
-    return {
-      success: false,
-      statusCode: 500,
-      message: `unexpected error: ${e.message}`,
-    };
+  } catch (error) {
+    throw error;
   }
 };

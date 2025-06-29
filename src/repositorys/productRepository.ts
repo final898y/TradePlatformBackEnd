@@ -1,4 +1,4 @@
-import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
+import { supabase, getUserIdByUuid } from '../helpers/supaBaseHelper.js';
 import ItransportResult from '../model/transportModel.js';
 import * as productModel from '../model/productModel.js';
 
@@ -12,7 +12,7 @@ export const getProductsCategories = async (): Promise<
 > => {
   try {
     // 查詢所有分類
-    const { data: categories, error: catError } = await supaBaseHelper.supabase
+    const { data: categories, error: catError } = await supabase
       .from('categories')
       .select('id, name')
       .order('id', { ascending: true });
@@ -20,7 +20,7 @@ export const getProductsCategories = async (): Promise<
     if (catError) throw new Error(`查詢分類失敗: ${catError.message}`);
 
     // 查詢所有子分類
-    const { data: subCategories, error: subCatError } = await supaBaseHelper.supabase
+    const { data: subCategories, error: subCatError } = await supabase
       .from('sub_categories')
       .select('id, name, category_id')
       .order('id', { ascending: true });
@@ -64,7 +64,7 @@ export const getAllProducts = async (
     const to = from + pageSizeNum - 1;
 
     // 構建 Supabase 查詢
-    let query = supaBaseHelper.supabase
+    let query = supabase
       .from('products')
       .select('id, name, price, description, stock, image_url, category_id, sub_category_id', {
         count: 'exact',
@@ -126,7 +126,7 @@ export const getProductByID = async (
   id: number,
 ): Promise<ItransportResult<productModel.ProductDetailResponse>> => {
   try {
-    const { data: product, error } = await supaBaseHelper.supabase
+    const { data: product, error } = await supabase
       .from('products')
       .select('id, name, price, description, stock, image_url, category_id, sub_category_id')
       .eq('id', id)
