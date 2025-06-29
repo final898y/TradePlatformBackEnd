@@ -40,7 +40,7 @@
 
 // // 導出 Vitest 的環境變數配置
 export const testEnv = {
-  NODE_ENV: 'development',
+  NODE_ENV: 'test',
   HTTPPORT: '3000',
   HTTPSPORT: '443',
   MYSQLHOST: 'TradePlatform-mysql',
@@ -51,12 +51,13 @@ export const testEnv = {
   MYSQLPORT_TEST: '3307',
   ACCESS_TOKEN_SECRET: 'envVars.ACCESS_TOKEN_SECRET',
   REFRESH_TOKEN_SECRET: 'envVars.REFRESH_TOKEN_SECRET',
-  ecpayHashKey: 'pwFHCqoQZGmho4w6',
-  ecpayHashIV: 'EkRm7iFT261dpevs',
+  ecpayHashKey: '1234567890abcdef',
+  ecpayHashIV: 'abcdef1234567890',
   linepayapi_ChannelID: '2006879614',
   linepayapi_ChannelSecretKey: 'envVars.linepayapi_ChannelSecretKey',
   tradeplatform_Superbase_pw: 'envVars.tradeplatform_Superbase_pw',
   rediscloud_freedb_pw: 'envVars.rediscloud_freedb_pw',
+  SUPABASE_KEY: 'sb_secret_Y8SXTO0dMHPUsyJ6Bowl2w_PrlNyVHp',
 };
 
 // export const testEnv = isProduction

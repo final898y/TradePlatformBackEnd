@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import * as payModel from '../model/payModel.js';
-import { GetCheckMacValue } from '../helpers/ecpayHelper.js';
+import { GetCheckMacValue, generateMerchantTradeNo } from '../helpers/ecpayHelper.js';
 
 function getCheckOut(req: Request): payModel.ecPayBackendOutput {
   const inputData: unknown = req.body;
@@ -11,7 +11,7 @@ function getCheckOut(req: Request): payModel.ecPayBackendOutput {
   if (!parseResult.success) {
     throw new Error(`資料格式錯誤: ${JSON.stringify(parseResult.error)}`);
   }
-  const MerchantTradeNo = crypto.randomUUID().replace(/-/g, '').substring(0, 20);
+  const MerchantTradeNo = generateMerchantTradeNo();
   const checkoutList = {
     ...parseResult.data,
     MerchantTradeNo: MerchantTradeNo,

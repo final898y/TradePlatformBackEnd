@@ -1,5 +1,5 @@
-import * as linepayHelper from '../helpers/linepayHelper.js';
-import * as payModel from '../model/payModel.js';
+import * as linepayHelper from '../../helpers/linepayHelper.js';
+import * as payModel from '../../model/payModel.js';
 import { vi, test, expect } from 'vitest';
 
 // Mock the config module
