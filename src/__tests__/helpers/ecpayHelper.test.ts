@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMerchantTradeNo, GetCheckMacValue } from '../../helpers/ecpayHelper.ts';
+import { generateMerchantTradeNo, GetCheckMacValue } from '../../helpers/ecpayHelper.js';
 import crypto from 'node:crypto';
 
 function createMockCheckoutList(overrides: Partial<Record<string, string>> = {}) {
