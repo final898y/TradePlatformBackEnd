@@ -159,6 +159,7 @@ export type Database = {
           id: number;
           paid_at: string | null;
           payment_method: string;
+          recipient_email: string | null;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
@@ -172,6 +173,7 @@ export type Database = {
           id?: number;
           paid_at?: string | null;
           payment_method: string;
+          recipient_email?: string | null;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
@@ -185,6 +187,7 @@ export type Database = {
           id?: number;
           paid_at?: string | null;
           payment_method?: string;
+          recipient_email?: string | null;
           recipient_name?: string;
           recipient_phone?: string;
           shipping_address?: string;

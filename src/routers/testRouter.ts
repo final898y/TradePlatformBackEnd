@@ -16,6 +16,7 @@ import { jwtVerify, createRemoteJWKSet } from 'jose';
 import * as supaBaseHelper from '../helpers/supaBaseHelper.js';
 import * as redisHelper from '../helpers/redisHelper.js';
 import authenticateToken from '../middlewares/authorization.js';
+import pgSQLpool from '../helpers/postgresqlHelper.js';
 
 const pool = mysql.createPool({
   host: env.MYSQLHOST_TEST,
@@ -293,6 +294,18 @@ const testRedisSet = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+async function testDbConnection() {
+  const client = await pgSQLpool.connect();
+  try {
+    const res = await client.query('SELECT 1');
+    console.log('✅ 資料庫連線成功！結果：', res.rows);
+  } catch (err) {
+    console.error('❌ 資料庫連線失敗：', err);
+  } finally {
+    client.release();
+  }
+}
+
 const router = express.Router();
 router.get('/selectall', testMysqlSelectAll);
 router.get('/select', testMysqlSelect);
@@ -305,4 +318,6 @@ router.get('/testjwtpayload', testJWTpayload);
 router.get('/supabase2', testSupabaseSelect2);
 router.get('/testRedisSet', authenticateToken, testRedisSet);
 router.get('/testwebsite', testWebsite);
+router.get('/testpgSQLpool', testDbConnection);
+
 export default router;

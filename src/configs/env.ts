@@ -29,6 +29,7 @@ const envSchema = z.object({
   rediscloud_freedb_pw: z.string(),
   //Supabase
   SUPABASE_KEY: z.string(),
+  SUPABASE_DB_PW: z.string(),
 });
 
 // 2. 解析並驗證環境變數

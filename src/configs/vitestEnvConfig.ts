@@ -58,6 +58,7 @@ export const testEnv = {
   tradeplatform_Superbase_pw: 'envVars.tradeplatform_Superbase_pw',
   rediscloud_freedb_pw: 'envVars.rediscloud_freedb_pw',
   SUPABASE_KEY: 'sb_secret_Y8SXTO0dMHPUsyJ6Bowl2w_PrlNyVHp',
+  SUPABASE_DB_PW: 'envVars.SUPABASE_DB_PW',
 };
 
 // export const testEnv = isProduction
