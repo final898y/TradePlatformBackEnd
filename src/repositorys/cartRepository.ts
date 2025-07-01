@@ -1,16 +1,12 @@
 import { supabase, getUserIdByUuid } from '../helpers/supaBaseHelper.js';
 import ItransportResult from '../model/transportModel.js';
+import * as cartModel from '../model/cartModel.js';
 
 export async function addToCart(
-  userUuid: string,
+  userId: number,
   productId: number,
   quantity: number,
 ): Promise<ItransportResult<string>> {
-  // 0. 查詢 user_id
-  const userId = await getUserIdByUuid(userUuid);
-  if (!userId) {
-    return { success: false, statusCode: 400, message: '使用者不存在' };
-  }
   // 1. 查詢商品庫存
   const { data: product, error: productError } = await supabase
     .from('products')
@@ -59,17 +55,12 @@ export async function addToCart(
 }
 
 export async function updateCartItem(
-  userUuid: string,
+  userId: number,
   productId: number,
   quantity: number,
 ): Promise<ItransportResult<string>> {
   if (quantity <= 0) {
     return { success: false, statusCode: 400, message: '數量必須大於 0' };
-  }
-
-  const userId = await getUserIdByUuid(userUuid);
-  if (!userId) {
-    return { success: false, statusCode: 400, message: '使用者不存在' };
   }
 
   const { error } = await supabase
@@ -86,14 +77,9 @@ export async function updateCartItem(
 }
 
 export async function deleteCartItem(
-  userUuid: string,
+  userId: number,
   productId: number,
 ): Promise<ItransportResult<string>> {
-  const userId = await getUserIdByUuid(userUuid);
-  if (!userId) {
-    return { success: false, statusCode: 400, message: '使用者不存在' };
-  }
-
   const { error } = await supabase
     .from('cart_items')
     .delete()
@@ -105,4 +91,37 @@ export async function deleteCartItem(
   }
 
   return { success: true, statusCode: 200, message: '已從購物車移除商品' };
+}
+
+export async function clearCart(userId: number): Promise<ItransportResult<string>> {
+  const { error } = await supabase.from('cart_items').delete().eq('user_id', userId);
+
+  if (error) {
+    return { success: false, statusCode: 500, message: error.message };
+  }
+
+  return { success: true, statusCode: 200, message: '購物車已清空' };
+}
+
+export async function getCart(
+  userId: number,
+): Promise<ItransportResult<cartModel.cartDataSchemaResponse>> {
+  const { data, error } = await supabase
+    .from('cart_items')
+    .select(
+      `
+      quantity,
+      products:products (*)
+    `,
+    )
+    .eq('user_id', userId);
+
+  if (error) {
+    return { success: false, statusCode: 500, message: error.message };
+  }
+  if (!data) {
+    return { success: false, statusCode: 500, message: '資料為空' };
+  }
+
+  return { success: true, statusCode: 200, message: '取得購物車成功', data };
 }

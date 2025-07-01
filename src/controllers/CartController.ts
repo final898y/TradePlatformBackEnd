@@ -5,7 +5,8 @@ import * as cartService from '../services/cartService.js';
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const transportResult = await cartService.addToCart(req);
-    res.status(transportResult.statusCode).json({ success: true, message: '加入購物車成功' });
+    const { statusCode, success, message, data } = transportResult;
+    res.status(statusCode).json({ success: success, message: message });
   } catch (error) {
     if (error instanceof ApiError) {
       return next(error);
@@ -21,7 +22,8 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
 export const updateCartItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const transportResult = await cartService.updateCartItem(req);
-    res.status(transportResult.statusCode).json({ success: true, message: '更新購物車成功' });
+    const { statusCode, success, message, data } = transportResult;
+    res.status(statusCode).json({ success: success, message: message });
   } catch (error) {
     if (error instanceof ApiError) {
       return next(error);
@@ -29,7 +31,7 @@ export const updateCartItem = async (req: Request, res: Response, next: NextFunc
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
-      next(new ApiError(500, '伺服器錯誤，無法加入購物車，請稍後再試。'));
+      next(new ApiError(500, '伺服器錯誤，無法更新購物車，請稍後再試。'));
     }
   }
 };
@@ -37,7 +39,8 @@ export const updateCartItem = async (req: Request, res: Response, next: NextFunc
 export const deleteCartItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const transportResult = await cartService.deleteCartItem(req);
-    res.status(transportResult.statusCode).json({ success: true, message: '刪除購物車商品成功' });
+    const { statusCode, success, message, data } = transportResult;
+    res.status(statusCode).json({ success: success, message: message });
   } catch (error) {
     if (error instanceof ApiError) {
       return next(error);
@@ -45,7 +48,30 @@ export const deleteCartItem = async (req: Request, res: Response, next: NextFunc
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
-      next(new ApiError(500, '伺服器錯誤，無法加入購物車，請稍後再試。'));
+      next(new ApiError(500, '伺服器錯誤，無法刪除購物車，請稍後再試。'));
     }
   }
+};
+
+export const clearCart = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const transportResult = await cartService.clearCart(req);
+    const { statusCode, success, message, data } = transportResult;
+    res.status(statusCode).json({ success: success, message: message });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return next(error);
+    }
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, '伺服器錯誤，無法清空購物車，請稍後再試。'));
+    }
+  }
+};
+
+export const getCart = async (req: Request, res: Response, next: NextFunction) => {
+  const transportResult = await cartService.getCart(req);
+  const { statusCode, success, message, data } = transportResult;
+  res.status(statusCode).json({ success: success, message: message, data: data });
 };

@@ -15,7 +15,7 @@ export const createOrderFromCart = async (req: Request, res: Response, next: Nex
     if (error instanceof Error) {
       next(new ApiError(500, error.message, error.stack, error.name));
     } else {
-      next(new ApiError(500, '伺服器錯誤，無法加入購物車，請稍後再試。'));
+      next(new ApiError(500, '伺服器錯誤，無法創建訂單，請稍後再試。'));
     }
   }
 };
