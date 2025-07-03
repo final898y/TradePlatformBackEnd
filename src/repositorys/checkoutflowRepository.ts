@@ -4,6 +4,20 @@ import ItransportResult from '../model/transportModel.js';
 import { CheckoutRequest } from '../model/checkoutflowModel.js';
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
 
+enum OrderStatus {
+  Pending = 'pending',
+  Paid = 'paid',
+  Shipped = 'shipped',
+  Cancelled = 'cancelled',
+}
+
+interface CartItem {
+  product_id: number;
+  quantity: number;
+  price: string; // Or number, depending on what the driver returns
+  stock: number;
+}
+
 export async function createOrderFromCart(
   checkoutrequest: CheckoutRequest,
 ): Promise<ItransportResult<{ orderNumber: string }>> {
@@ -27,7 +41,7 @@ export async function createOrderFromCart(
     if (!userId) throw new Error('使用者不存在');
 
     // 查詢購物車項目（含價格與庫存）
-    const { rows: cartItems } = await client.query(
+    const { rows: cartItems }: { rows: CartItem[] } = await client.query(
       `SELECT ci.product_id, ci.quantity, p.price, p.stock
        FROM cart_items ci
        JOIN products p ON p.id = ci.product_id
@@ -57,12 +71,13 @@ export async function createOrderFromCart(
         order_number, user_id, total_amount, status,
         shipping_address, order_note, recipient_name, recipient_phone,
         recipient_email, payment_method
-      ) VALUES ($1,$2,$3,'pending',$4,$5,$6,$7,$8)
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
        RETURNING id`,
       [
         orderNumber,
         userId,
         totalAmount,
+        OrderStatus.Pending,
         shipping_address,
         order_note,
         recipient_name,
