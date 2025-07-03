@@ -157,9 +157,11 @@ export type Database = {
         Row: {
           created_at: string | null;
           id: number;
+          order_note: string | null;
+          order_number: string;
           paid_at: string | null;
           payment_method: string;
-          recipient_email: string | null;
+          recipient_email: string;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
@@ -171,9 +173,11 @@ export type Database = {
         Insert: {
           created_at?: string | null;
           id?: number;
+          order_note?: string | null;
+          order_number: string;
           paid_at?: string | null;
           payment_method: string;
-          recipient_email?: string | null;
+          recipient_email: string;
           recipient_name: string;
           recipient_phone: string;
           shipping_address: string;
@@ -185,9 +189,11 @@ export type Database = {
         Update: {
           created_at?: string | null;
           id?: number;
+          order_note?: string | null;
+          order_number?: string;
           paid_at?: string | null;
           payment_method?: string;
-          recipient_email?: string | null;
+          recipient_email?: string;
           recipient_name?: string;
           recipient_phone?: string;
           shipping_address?: string;

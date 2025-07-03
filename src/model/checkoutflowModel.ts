@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const checkoutRequestSchema = z.object({
   userUuid: z.string().uuid({ message: 'userUuid 必須是合法的 UUID 格式' }),
   shipping_address: z.string(),
+  order_note: z.string().optional(),
   recipient_name: z.string().min(2, { message: '收件人姓名不能太短' }),
   recipient_phone: z
     .string()

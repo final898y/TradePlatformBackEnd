@@ -16,6 +16,7 @@ export async function createOrderFromCart(
     const {
       userUuid,
       shipping_address,
+      order_note,
       recipient_name,
       recipient_phone,
       recipient_email,
@@ -54,7 +55,7 @@ export async function createOrderFromCart(
     const { rows: newOrderRows } = await client.query(
       `INSERT INTO orders (
         order_number, user_id, total_amount, status,
-        shipping_address, recipient_name, recipient_phone,
+        shipping_address, order_note, recipient_name, recipient_phone,
         recipient_email, payment_method
       ) VALUES ($1,$2,$3,'pending',$4,$5,$6,$7,$8)
        RETURNING id`,
@@ -63,6 +64,7 @@ export async function createOrderFromCart(
         userId,
         totalAmount,
         shipping_address,
+        order_note,
         recipient_name,
         recipient_phone,
         recipient_email,

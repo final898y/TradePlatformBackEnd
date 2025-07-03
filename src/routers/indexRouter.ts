@@ -6,6 +6,7 @@ import TestRouter from './testRouter.js';
 import AuthRouter from './authRouter.js';
 import ProductRouter from './productRouter.js';
 import CartRouter from './cartRouter.js';
+import CheckoutflowRouter from './CheckoutflowRouter.js';
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json' with { type: 'json' };
@@ -17,6 +18,7 @@ router.use('/health', HealthRouter);
 router.use('/users', UserRouter);
 router.use('/products', ProductRouter);
 router.use('/carts', CartRouter);
+router.use('/checkoutflow', CheckoutflowRouter);
 router.use('/pay', PayRouter);
 router.use('/tests', TestRouter);
 router.use('/auth', AuthRouter);
