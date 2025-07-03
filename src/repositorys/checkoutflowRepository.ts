@@ -1,7 +1,7 @@
 import pgSQLpool from '../helpers/postgresqlHelper.js';
 import { getUserIdByUuid } from '../helpers/supaBaseHelper.js';
 import ItransportResult from '../model/transportModel.js';
-import { CheckoutRequest } from '../model/checkoutflowModel.js';
+import { CheckoutRequest, OrderDetail, orderDetailSchema } from '../model/checkoutflowModel.js';
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
 
 enum OrderStatus {
@@ -125,6 +125,77 @@ export async function createOrderFromCart(
       success: false,
       statusCode: 500,
       message: error.message || '建立訂單失敗',
+    };
+  } finally {
+    client.release();
+  }
+}
+
+export async function getOrderByOrderNumber(
+  orderNumber: string,
+): Promise<ItransportResult<OrderDetail>> {
+  const client = await pgSQLpool.connect();
+  try {
+    const query = `
+      SELECT
+        o.id as order_id,
+        o.order_number,
+        o.total_amount,
+        o.status,
+        o.shipping_address,
+        o.order_note,
+        o.recipient_name,
+        o.recipient_phone,
+        o.recipient_email,
+        o.payment_method,
+        o.created_at,
+        o.paid_at,
+        json_agg(json_build_object(
+          'product_id', p.id,
+          'product_name', p.name,
+          'quantity', oi.quantity,
+          'unit_price', oi.unit_price
+        )) as items
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      JOIN products p ON oi.product_id = p.id
+      WHERE o.order_number = $1
+      GROUP BY o.id;
+    `;
+
+    const { rows } = await client.query(query, [orderNumber]);
+
+    if (rows.length === 0) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: '找不到該訂單',
+      };
+    }
+
+    const validation = orderDetailSchema.safeParse(rows[0]);
+
+    if (!validation.success) {
+      console.error('資料庫查詢結果不符合預期格式：', validation.error);
+      return {
+        success: false,
+        statusCode: 500,
+        message: '資料庫回傳格式錯誤',
+      };
+    }
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: '查詢訂單成功',
+      data: validation.data,
+    };
+  } catch (error: any) {
+    console.error('查詢訂單失敗：', error);
+    return {
+      success: false,
+      statusCode: 500,
+      message: error.message || '查詢訂單失敗',
     };
   } finally {
     client.release();

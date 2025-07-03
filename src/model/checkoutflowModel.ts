@@ -15,3 +15,28 @@ export const checkoutRequestSchema = z.object({
 });
 
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
+
+export const orderItemSchema = z.object({
+  product_id: z.number(),
+  product_name: z.string(),
+  quantity: z.number(),
+  unit_price: z.number(),
+});
+
+export const orderDetailSchema = z.object({
+  order_id: z.number(),
+  order_number: z.string(),
+  total_amount: z.string(), // Assuming total_amount is a string from the DB
+  status: z.string(),
+  shipping_address: z.string(),
+  order_note: z.string().nullable(),
+  recipient_name: z.string(),
+  recipient_phone: z.string(),
+  recipient_email: z.string(),
+  payment_method: z.string(),
+  created_at: z.date(),
+  paid_at: z.date().nullable(),
+  items: z.array(orderItemSchema),
+});
+
+export type OrderDetail = z.infer<typeof orderDetailSchema>;

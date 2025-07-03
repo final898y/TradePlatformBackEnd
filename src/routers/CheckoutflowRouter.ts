@@ -4,5 +4,6 @@ import * as CheckoutflowController from '../controllers/CheckoutflowController.j
 const router = express.Router();
 
 router.post('/createOrderFromCart', wrapAsync(CheckoutflowController.createOrderFromCart));
+router.get('/order/:orderNumber', wrapAsync(CheckoutflowController.getOrderByOrderNumber));
 
 export default router;
