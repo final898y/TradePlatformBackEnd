@@ -1,10 +1,16 @@
 import type { Config } from '../types/configType.js';
 
+const ngrokbaseUrl = 'https://3284-180-177-110-215.ngrok-free.app';
 const baseUrl = 'http://localhost:5173';
 const config: Config = {
   linepayredirectUrls: {
     confirmUrl: `${baseUrl}/linepay/confirm`,
     cancelUrl: `${baseUrl}/linepay/cancel`,
+  },
+  ecpayAioCheckOutconfigs: {
+    MerchantID: '3002607',
+    ReturnURL: `${ngrokbaseUrl}/pay/ecpay/getpayresult`,
+    EncryptType: 1,
   },
   allowedOrigins: [
     'http://localhost:3000',

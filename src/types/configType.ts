@@ -10,6 +10,11 @@ export interface Config {
     confirmUrl: string;
     cancelUrl: string;
   };
+  ecpayAioCheckOutconfigs: {
+    MerchantID: string;
+    ReturnURL: string;
+    EncryptType: number;
+  };
   allowedOrigins: string[];
   redisconfig: {
     username: string;

@@ -7,15 +7,12 @@ export const ecPayBackendOutputSchema = z.object({
 export type ecPayBackendOutput = z.infer<typeof ecPayBackendOutputSchema>;
 
 export const ecPayFrountendInputSchema = z.object({
-  MerchantID: z.string(),
   MerchantTradeDate: z.string(),
   PaymentType: z.string(),
   TotalAmount: z.number(),
   TradeDesc: z.string(),
   ItemName: z.string(),
-  ReturnURL: z.string(),
   ChoosePayment: z.string(),
-  EncryptType: z.number(),
   ClientBackURL: z.string().optional(),
 });
 export type ecPayFrountendInput = z.infer<typeof ecPayFrountendInputSchema>;
@@ -69,6 +66,38 @@ export const PaymentResultSchema = z.object({
   CheckMacValue: z.string().optional(),
 });
 export type PaymentResult = z.infer<typeof PaymentResultSchema>;
+
+export const ecPayQueryTradeInfoSchema = z.object({
+  MerchantID: z.string(),
+  MerchantTradeNo: z.string(),
+  TimeStamp: z.number(),
+  PlatformID: z.string().optional(),
+  CheckMacValue: z.string(),
+});
+export type ecPayQueryTradeInfo = z.infer<typeof ecPayQueryTradeInfoSchema>;
+
+export const ecPayQueryTradeInfoResponseSchema = z.object({
+  MerchantID: z.string(),
+  MerchantTradeNo: z.string(),
+  StoreID: z.string(),
+  TradeNo: z.string(),
+  TradeAmt: z.string(),
+  PaymentDate: z.string(),
+  PaymentType: z.string(),
+  HandlingCharge: z.string(),
+  PaymentTypeChargeFee: z.string(),
+  TradeDate: z.string(),
+  TradeStatus: z.string(),
+  ItemName: z.string(),
+  CustomField1: z.string(),
+  CustomField2: z.string(),
+  CustomField3: z.string(),
+  CustomField4: z.string(),
+  CheckMacValue: z.string(),
+});
+export type ecPayQueryTradeInfoResponse = z.infer<
+  typeof ecPayQueryTradeInfoResponseSchema
+>;
 
 //LinePay----------
 const productSchema = z.object({
@@ -136,9 +165,9 @@ export const LinePaymentPRResponseSchema = z.object({
 export type LinePaymentPRResponse = z.infer<typeof LinePaymentPRResponseSchema>;
 
 //LINE Pay Payment confirmation
-export const LinePaymentPCFrountendInputSchema =z.object({
-  transactionId:z.string(),
-  orderId:z.string(),
+export const LinePaymentPCFrountendInputSchema = z.object({
+  transactionId: z.string(),
+  orderId: z.string(),
 });
 export const LinePaymentPCRequestSchema = z.object({
   amount: z.number(),
@@ -146,22 +175,21 @@ export const LinePaymentPCRequestSchema = z.object({
 });
 const payInfoSchema = z.object({
   method: z.string(),
-  amount: z.number()
+  amount: z.number(),
 });
 
 const infoSchema = z.object({
   orderId: z.string(),
   transactionId: z.string(),
-  payInfo: z.array(payInfoSchema)
+  payInfo: z.array(payInfoSchema),
 });
 
 export const LinePaymentPCResponseSchema = z.object({
   returnCode: z.literal('0000'),
   returnMessage: z.string(),
-  info: infoSchema
+  info: infoSchema,
 });
 export type LinePaymentPCResponse = z.infer<typeof LinePaymentPCResponseSchema>;
-
 
 // interface ecPayBackendOutput {
 //   CheckMacValue: string;

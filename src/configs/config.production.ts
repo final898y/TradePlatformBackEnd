@@ -6,6 +6,11 @@ const config: Config = {
     confirmUrl: `${baseUrl}/linepay/confirm`,
     cancelUrl: `${baseUrl}/linepay/cancel`,
   },
+  ecpayAioCheckOutconfigs: {
+    MerchantID: '',
+    ReturnURL: '',
+    EncryptType: 1,
+  },
   allowedOrigins: ['https://shopping-web-grok.vercel.app', 'https://localhost:5173'],
   redisconfig: {
     username: 'default',
