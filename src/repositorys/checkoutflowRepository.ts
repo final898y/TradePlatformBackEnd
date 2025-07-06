@@ -5,10 +5,11 @@ import { CheckoutRequest, OrderDetail, orderDetailSchema } from '../model/checko
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
 
 enum OrderStatus {
-  Pending = 'pending',
-  Paid = 'paid',
-  Shipped = 'shipped',
-  Cancelled = 'cancelled',
+  Pending = 'PENDING',
+  Paid = 'PAID',
+  Shipped = 'SHIPPED',
+  Delivered = 'DELIVERED',
+  Cancelled = 'CANCELLED',
 }
 
 interface CartItem {

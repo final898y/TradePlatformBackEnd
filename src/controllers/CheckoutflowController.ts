@@ -5,9 +5,11 @@ import * as checkoutflowService from '../services/checkoutflowService.js';
 export const createOrderFromCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const transportResult = await checkoutflowService.createOrderFromCart(req);
-    res
-      .status(transportResult.statusCode)
-      .json({ success: true, message: '創建訂單成功', data: transportResult.data?.orderNumber });
+    res.status(transportResult.statusCode).json({
+      success: true,
+      message: '創建訂單成功',
+      data: { orderNumber: transportResult.data?.orderNumber },
+    });
   } catch (error) {
     if (error instanceof ApiError) {
       return next(error);

@@ -25,13 +25,16 @@ async function getCheckOut(req: Request): Promise<payModel.ecPayBackendOutput> {
   await ecpayRepository.createPayment({
     amount: checkoutList.TotalAmount,
     payment_method: checkoutList.ChoosePayment,
-    status: 'pending',
+    status: 'PENDING',
     transaction_id: MerchantTradeNo,
   });
 
   return {
     MerchantTradeNo: MerchantTradeNo,
     CheckMacValue: GetCheckMacValue(checkoutList),
+    ReturnURL: config.ecpayAioCheckOutconfigs.ReturnURL,
+    EncryptType: config.ecpayAioCheckOutconfigs.EncryptType,
+    MerchantID: config.ecpayAioCheckOutconfigs.MerchantID,
   };
 }
 
@@ -57,7 +60,7 @@ async function getPayResult(req: Request): Promise<string> {
     // 將 yyyy/MM/dd HH:mm:ss 格式轉換為 ISO 8601 格式
     const paidAtISO = new Date(parseResult.data.PaymentDate).toISOString();
     await ecpayRepository.updatePayment(parseResult.data.MerchantTradeNo, {
-      status: 'paid',
+      status: 'PAID',
       paid_at: paidAtISO,
     });
   }
@@ -105,7 +108,7 @@ async function queryTradeInfo(merchantTradeNo: string) {
   // 交易狀態為1，代表已付款
   if (result.TradeStatus === '1') {
     await ecpayRepository.updatePayment(result.MerchantTradeNo, {
-      status: 'paid',
+      status: 'PAID',
       paid_at: new Date(result.PaymentDate).toISOString(),
     });
   }

@@ -3,6 +3,9 @@ import { z } from 'zod';
 export const ecPayBackendOutputSchema = z.object({
   CheckMacValue: z.string(),
   MerchantTradeNo: z.string(),
+  MerchantID: z.string(),
+  ReturnURL: z.string(),
+  EncryptType: z.number(),
 });
 export type ecPayBackendOutput = z.infer<typeof ecPayBackendOutputSchema>;
 
@@ -95,9 +98,7 @@ export const ecPayQueryTradeInfoResponseSchema = z.object({
   CustomField4: z.string(),
   CheckMacValue: z.string(),
 });
-export type ecPayQueryTradeInfoResponse = z.infer<
-  typeof ecPayQueryTradeInfoResponseSchema
->;
+export type ecPayQueryTradeInfoResponse = z.infer<typeof ecPayQueryTradeInfoResponseSchema>;
 
 //LinePay----------
 const productSchema = z.object({
