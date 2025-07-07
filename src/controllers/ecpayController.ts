@@ -44,4 +44,17 @@ const queryTradeInfo = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export { getCheckOut, getPayResult, queryTradeInfo };
+const getPaymentByTransactionId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const output = await ecpayService.getPaymentByTransactionId(req);
+    res.status(output.statusCode).json(output);
+  } catch (error) {
+    if (error instanceof Error) {
+      next(new ApiError(500, error.message, error.stack, error.name));
+    } else {
+      next(new ApiError(500, 'Error fetching trade info'));
+    }
+  }
+};
+
+export { getCheckOut, getPayResult, queryTradeInfo, getPaymentByTransactionId };

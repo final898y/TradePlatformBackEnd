@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { Database } from '../model/supabaseModel.js';
+
+export type Payments = Database['public']['Tables']['payments']['Row'];
 
 export const ecPayBackendOutputSchema = z.object({
   CheckMacValue: z.string(),
@@ -81,23 +84,23 @@ export const ecPayQueryTradeInfoSchema = z.object({
 export type ecPayQueryTradeInfo = z.infer<typeof ecPayQueryTradeInfoSchema>;
 
 export const ecPayQueryTradeInfoResponseSchema = z.object({
-  MerchantID: z.string(),
-  MerchantTradeNo: z.string(),
-  StoreID: z.string(),
-  TradeNo: z.string(),
-  TradeAmt: z.string(),
-  PaymentDate: z.string(),
-  PaymentType: z.string(),
-  HandlingCharge: z.string(),
-  PaymentTypeChargeFee: z.string(),
-  TradeDate: z.string(),
-  TradeStatus: z.string(),
+  MerchantID: z.string(), // 商家代號
+  MerchantTradeNo: z.string(), // 商家訂單編號
+  StoreID: z.string().optional(), // 商店代號，可能為空
+  TradeNo: z.string(), // 綠界交易編號
+  TradeAmt: z.string().regex(/^\d+$/), // 交易金額（字串但應為數字格式）
+  PaymentDate: z.string().datetime({ offset: true }).or(z.string()), // 付款時間
+  PaymentType: z.string(), // 付款方式
+  HandlingCharge: z.string().optional(), // 手續費
+  PaymentTypeChargeFee: z.string().optional(), // 付款類型的費用
+  TradeDate: z.string(), // 建立時間
+  TradeStatus: z.enum(['0', '1', '10200095']), // 交易狀態
   ItemName: z.string(),
-  CustomField1: z.string(),
-  CustomField2: z.string(),
-  CustomField3: z.string(),
-  CustomField4: z.string(),
-  CheckMacValue: z.string(),
+  CustomField1: z.string().optional(),
+  CustomField2: z.string().optional(),
+  CustomField3: z.string().optional(),
+  CustomField4: z.string().optional(),
+  CheckMacValue: z.string(), // 回傳的 CheckMacValue
 });
 export type ecPayQueryTradeInfoResponse = z.infer<typeof ecPayQueryTradeInfoResponseSchema>;
 

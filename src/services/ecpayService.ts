@@ -3,6 +3,8 @@ import * as payModel from '../model/payModel.js';
 import { GetCheckMacValue, generateMerchantTradeNo } from '../helpers/ecpayHelper.js';
 import config from '../configs/configIndex.js';
 import * as ecpayRepository from '../repositorys/ecpayRepository.js';
+import * as checkoutflowRepository from '../repositorys/checkoutflowRepository.js';
+import ItransportResult from '../model/transportModel.js';
 
 async function getCheckOut(req: Request): Promise<payModel.ecPayBackendOutput> {
   const inputData: unknown = req.body;
@@ -57,12 +59,13 @@ async function getPayResult(req: Request): Promise<string> {
   if (CheckMacValue !== caculatMacValue) {
     return 'CheckMacValue dont match';
   }
+  const tradeInfo = await queryTradeInfo(parseResult.data.MerchantTradeNo);
 
   // 付款成功
-  if (parseResult.data.RtnCode === '1') {
+  if (parseResult.data.RtnCode === '1' && tradeInfo.TradeStatus === '1') {
     // 將 yyyy/MM/dd HH:mm:ss 格式轉換為 ISO 8601 格式
     const paidAtISO = new Date(parseResult.data.PaymentDate).toISOString();
-    await ecpayRepository.updatePayment(parseResult.data.MerchantTradeNo, {
+    await checkoutflowRepository.updatePayment(parseResult.data.MerchantTradeNo, {
       status: 'PAID',
       paid_at: paidAtISO,
     });
@@ -101,7 +104,13 @@ async function queryTradeInfo(merchantTradeNo: string) {
     result[key] = value;
   }
 
-  const { CheckMacValue: returnedMacValue, ...tradeInfo } = result;
+  const parsed = payModel.ecPayQueryTradeInfoResponseSchema.safeParse(result);
+
+  if (!parsed.success) {
+    console.error(parsed.error.format());
+    throw new Error('回傳資料格式錯誤');
+  }
+  const { CheckMacValue: returnedMacValue, ...tradeInfo } = parsed.data;
   const calculatedMacValue = GetCheckMacValue(tradeInfo);
 
   if (returnedMacValue !== calculatedMacValue) {
@@ -109,14 +118,28 @@ async function queryTradeInfo(merchantTradeNo: string) {
   }
 
   // 交易狀態為1，代表已付款
-  if (result.TradeStatus === '1') {
-    await ecpayRepository.updatePayment(result.MerchantTradeNo, {
-      status: 'PAID',
-      paid_at: new Date(result.PaymentDate).toISOString(),
-    });
-  }
+  // if (tradeInfo.TradeStatus === '1') {
+  //   await ecpayRepository.updatePayment(result.MerchantTradeNo, {
+  //     status: 'PAID',
+  //     paid_at: new Date(result.PaymentDate).toISOString(),
+  //   });
+  // }
 
-  return result;
+  return tradeInfo;
+}
+
+export async function getPaymentByTransactionId(
+  req: Request,
+): Promise<ItransportResult<payModel.Payments>> {
+  const transactionId = req.query.transactionId;
+  if (typeof transactionId !== 'string') {
+    return {
+      success: false,
+      statusCode: 400,
+      message: `Request.Query資料格式錯誤`,
+    };
+  }
+  return await ecpayRepository.getPaymentByTransactionId(transactionId);
 }
 
 export { getCheckOut, getPayResult, queryTradeInfo };

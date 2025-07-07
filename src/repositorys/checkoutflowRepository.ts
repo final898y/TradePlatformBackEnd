@@ -4,6 +4,10 @@ import ItransportResult from '../model/transportModel.js';
 import { CheckoutRequest, OrderDetail, orderDetailSchema } from '../model/checkoutflowModel.js';
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
 
+import { supabase } from '../helpers/supaBaseHelper.js';
+import { TablesUpdate } from '../model/supabaseModel.js';
+import { FrountendPaymentInsert } from '../model/payModel.js';
+
 enum OrderStatus {
   Pending = 'PENDING',
   Paid = 'PAID',
@@ -201,4 +205,19 @@ export async function getOrderByOrderNumber(
   } finally {
     client.release();
   }
+}
+
+type PaymentUpdate = TablesUpdate<'payments'>;
+
+export async function updatePayment(transactionId: string, paymentData: PaymentUpdate) {
+  const { data, error } = await supabase
+    .from('payments')
+    .update(paymentData)
+    .eq('transaction_id', transactionId)
+    .select();
+
+  if (error) {
+    throw new Error(`更新付款資料失敗: ${error.message}`);
+  }
+  return data;
 }

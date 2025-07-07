@@ -1,8 +1,6 @@
 import { supabase } from '../helpers/supaBaseHelper.js';
-import { TablesUpdate } from '../model/supabaseModel.js';
-import { FrountendPaymentInsert } from '../model/payModel.js';
-
-type PaymentUpdate = TablesUpdate<'payments'>;
+import type { FrountendPaymentInsert, Payments } from '../model/payModel.js';
+import ItransportResult from '../model/transportModel.js';
 
 export async function createPayment(FrountendpaymentData: FrountendPaymentInsert) {
   const { data, error } = await supabase.rpc('insert_payment_by_order_number', {
@@ -23,20 +21,9 @@ export async function createPayment(FrountendpaymentData: FrountendPaymentInsert
   }
 }
 
-export async function updatePayment(transactionId: string, paymentData: PaymentUpdate) {
-  const { data, error } = await supabase
-    .from('payments')
-    .update(paymentData)
-    .eq('transaction_id', transactionId)
-    .select();
-
-  if (error) {
-    throw new Error(`更新付款資料失敗: ${error.message}`);
-  }
-  return data;
-}
-
-export async function getPaymentByTransactionId(transactionId: string) {
+export async function getPaymentByTransactionId(
+  transactionId: string,
+): Promise<ItransportResult<Payments>> {
   const { data, error } = await supabase
     .from('payments')
     .select('*')
@@ -44,7 +31,7 @@ export async function getPaymentByTransactionId(transactionId: string) {
     .single();
 
   if (error) {
-    throw new Error(`查詢付款資料失敗: ${error.message}`);
+    return { success: false, statusCode: 500, message: error.message };
   }
-  return data;
+  return { success: true, statusCode: 200, message: '查詢付款資料成功', data: data };
 }
