@@ -1,16 +1,26 @@
 import { supabase } from '../helpers/supaBaseHelper.js';
-import { TablesInsert, TablesUpdate } from '../model/supabaseModel.js';
+import { TablesUpdate } from '../model/supabaseModel.js';
+import { FrountendPaymentInsert } from '../model/payModel.js';
 
-type PaymentInsert = TablesInsert<'payments'>;
 type PaymentUpdate = TablesUpdate<'payments'>;
 
-export async function createPayment(paymentData: PaymentInsert) {
-  const { data, error } = await supabase.from('payments').insert(paymentData).select();
+export async function createPayment(FrountendpaymentData: FrountendPaymentInsert) {
+  const { data, error } = await supabase.rpc('insert_payment_by_order_number', {
+    p_order_number: FrountendpaymentData.order_number,
+    p_transaction_id: FrountendpaymentData.transaction_id,
+    p_amount: Math.floor(FrountendpaymentData.amount), // 確保是整數
+    p_payment_method: 'ecpay',
+  });
 
   if (error) {
-    throw new Error(`建立付款資料失敗: ${error.message}`);
+    if (error.message.includes('查無對應的訂單編號')) {
+      throw new Error('訂單不存在，請確認您的訂單編號。');
+    } else {
+      console.error('資料庫錯誤：', error.message);
+    }
+  } else {
+    console.log('插入成功，付款 ID:', data);
   }
-  return data;
 }
 
 export async function updatePayment(transactionId: string, paymentData: PaymentUpdate) {

@@ -462,7 +462,15 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      insert_payment_by_order_number: {
+        Args: {
+          p_order_number: string;
+          p_transaction_id: string;
+          p_amount: number;
+          p_payment_method: string;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;

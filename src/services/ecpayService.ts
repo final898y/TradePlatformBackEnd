@@ -14,8 +14,10 @@ async function getCheckOut(req: Request): Promise<payModel.ecPayBackendOutput> {
     throw new Error(`資料格式錯誤: ${JSON.stringify(parseResult.error)}`);
   }
   const MerchantTradeNo = generateMerchantTradeNo();
+  const { OrderNumber, ...parseResultWithoutOrderNumber } = parseResult.data;
+
   const checkoutList = {
-    ...parseResult.data,
+    ...parseResultWithoutOrderNumber,
     MerchantTradeNo: MerchantTradeNo,
     ReturnURL: config.ecpayAioCheckOutconfigs.ReturnURL,
     EncryptType: config.ecpayAioCheckOutconfigs.EncryptType,
@@ -23,8 +25,9 @@ async function getCheckOut(req: Request): Promise<payModel.ecPayBackendOutput> {
   };
 
   await ecpayRepository.createPayment({
+    order_number: OrderNumber,
     amount: checkoutList.TotalAmount,
-    payment_method: checkoutList.ChoosePayment,
+    payment_method: 'ecpay',
     status: 'PENDING',
     transaction_id: MerchantTradeNo,
   });

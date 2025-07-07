@@ -30,10 +30,10 @@ const getPayResult = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-const getQueryTradeInfo = async (req: Request, res: Response, next: NextFunction) => {
+const queryTradeInfo = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { merchantTradeNo } = req.params;
-    const tradeInfo = await ecpayService.queryTradeInfo(merchantTradeNo);
+    const { orderNumber } = req.params;
+    const tradeInfo = await ecpayService.queryTradeInfo(orderNumber);
     res.status(200).json(tradeInfo);
   } catch (error) {
     if (error instanceof Error) {
@@ -44,4 +44,4 @@ const getQueryTradeInfo = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export { getCheckOut, getPayResult, getQueryTradeInfo };
+export { getCheckOut, getPayResult, queryTradeInfo };

@@ -1,6 +1,6 @@
 import type { Config } from '../types/configType.js';
 
-const ngrokbaseUrl = 'https://3284-180-177-110-215.ngrok-free.app';
+const ngrokbaseUrl = 'https://a4a4-123-195-193-252.ngrok-free.app';
 const baseUrl = 'http://localhost:5173';
 const config: Config = {
   linepayredirectUrls: {
@@ -9,7 +9,7 @@ const config: Config = {
   },
   ecpayAioCheckOutconfigs: {
     MerchantID: '3002607',
-    ReturnURL: `${ngrokbaseUrl}/pay/ecpay/getpayresult`,
+    ReturnURL: `${ngrokbaseUrl}/api/pay/ecpay/getpayresult`,
     EncryptType: 1,
   },
   allowedOrigins: [

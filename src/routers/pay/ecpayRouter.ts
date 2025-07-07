@@ -4,6 +4,5 @@ const router = express.Router();
 
 router.post('/getcheckout', ecpayController.getCheckOut);
 router.post('/getpayresult', ecpayController.getPayResult);
-router.get('/query-trade-info/:merchantTradeNo', ecpayController.getQueryTradeInfo);
 
 export default router;
