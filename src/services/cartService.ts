@@ -94,7 +94,7 @@ export const clearCart = async (req: Request): Promise<ItransportResult<string>>
 
 export const getCart = async (
   req: Request,
-): Promise<ItransportResult<cartModel.cartDataSchemaResponse>> => {
+): Promise<ItransportResult<cartModel.cartItemListResponse>> => {
   const parseResult = cartModel.GetCartSchema.safeParse(req.query);
 
   if (!parseResult.success) {

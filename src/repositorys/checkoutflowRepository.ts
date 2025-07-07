@@ -1,30 +1,12 @@
 import pgSQLpool from '../helpers/postgresqlHelper.js';
 import { getUserIdByUuid } from '../helpers/supaBaseHelper.js';
 import ItransportResult from '../model/transportModel.js';
-import { CheckoutRequest, OrderDetail, orderDetailSchema } from '../model/checkoutflowModel.js';
+import * as checkoutflowModel from '../model/checkoutflowModel.js';
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
-
 import { supabase } from '../helpers/supaBaseHelper.js';
-import { TablesUpdate } from '../model/supabaseModel.js';
-import { FrountendPaymentInsert } from '../model/payModel.js';
-
-enum OrderStatus {
-  Pending = 'PENDING',
-  Paid = 'PAID',
-  Shipped = 'SHIPPED',
-  Delivered = 'DELIVERED',
-  Cancelled = 'CANCELLED',
-}
-
-interface CartItem {
-  product_id: number;
-  quantity: number;
-  price: string; // Or number, depending on what the driver returns
-  stock: number;
-}
 
 export async function createOrderFromCart(
-  checkoutrequest: CheckoutRequest,
+  checkoutrequest: checkoutflowModel.CheckoutRequest,
 ): Promise<ItransportResult<{ orderNumber: string }>> {
   const client = await pgSQLpool.connect();
 
@@ -46,7 +28,7 @@ export async function createOrderFromCart(
     if (!userId) throw new Error('使用者不存在');
 
     // 查詢購物車項目（含價格與庫存）
-    const { rows: cartItems }: { rows: CartItem[] } = await client.query(
+    const { rows: cartItems }: { rows: checkoutflowModel.CartItem[] } = await client.query(
       `SELECT ci.product_id, ci.quantity, p.price, p.stock
        FROM cart_items ci
        JOIN products p ON p.id = ci.product_id
@@ -82,7 +64,7 @@ export async function createOrderFromCart(
         orderNumber,
         userId,
         totalAmount,
-        OrderStatus.Pending,
+        checkoutflowModel.OrderStatus.Pending,
         shipping_address,
         order_note,
         recipient_name,
@@ -138,7 +120,7 @@ export async function createOrderFromCart(
 
 export async function getOrderByOrderNumber(
   orderNumber: string,
-): Promise<ItransportResult<OrderDetail>> {
+): Promise<ItransportResult<checkoutflowModel.OrderDetail>> {
   const client = await pgSQLpool.connect();
   try {
     const query = `
@@ -178,7 +160,7 @@ export async function getOrderByOrderNumber(
       };
     }
 
-    const validation = orderDetailSchema.safeParse(rows[0]);
+    const validation = checkoutflowModel.orderDetailSchema.safeParse(rows[0]);
 
     if (!validation.success) {
       console.error('資料庫查詢結果不符合預期格式：', validation.error);
@@ -207,9 +189,10 @@ export async function getOrderByOrderNumber(
   }
 }
 
-type PaymentUpdate = TablesUpdate<'payments'>;
-
-export async function updatePayment(transactionId: string, paymentData: PaymentUpdate) {
+export async function updatePayment(
+  transactionId: string,
+  paymentData: checkoutflowModel.PaymentUpdate,
+) {
   const { data, error } = await supabase
     .from('payments')
     .update(paymentData)

@@ -1,6 +1,6 @@
-import { supabase, getUserIdByUuid } from '../helpers/supaBaseHelper.js';
 import ItransportResult from '../model/transportModel.js';
-import * as cartModel from '../model/cartModel.js';
+import { supabase } from '../helpers/supaBaseHelper.js';
+import { cartItemListResponse } from '../model/cartModel.js';
 
 export async function addToCart(
   userId: number,
@@ -103,9 +103,7 @@ export async function clearCart(userId: number): Promise<ItransportResult<string
   return { success: true, statusCode: 200, message: '購物車已清空' };
 }
 
-export async function getCart(
-  userId: number,
-): Promise<ItransportResult<cartModel.cartDataSchemaResponse>> {
+export async function getCart(userId: number): Promise<ItransportResult<cartItemListResponse>> {
   const { data, error } = await supabase
     .from('cart_items')
     .select(

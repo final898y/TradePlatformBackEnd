@@ -49,5 +49,5 @@ const cartItemSchema = z.object({
   products: productSchema,
 });
 
-const cartDataSchema = z.array(cartItemSchema); // 陣列形式
-export type cartDataSchemaResponse = z.infer<typeof cartDataSchema>;
+const cartItemListSchema = z.array(cartItemSchema); // 陣列形式
+export type cartItemListResponse = z.infer<typeof cartItemListSchema>;

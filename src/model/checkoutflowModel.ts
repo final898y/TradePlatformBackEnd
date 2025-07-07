@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TablesUpdate } from '../model/supabaseModel.js';
 
 export const checkoutRequestSchema = z.object({
   userUuid: z.string().uuid({ message: 'userUuid 必須是合法的 UUID 格式' }),
@@ -40,3 +41,20 @@ export const orderDetailSchema = z.object({
 });
 
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
+
+export type PaymentUpdate = TablesUpdate<'payments'>;
+
+export enum OrderStatus {
+  Pending = 'PENDING',
+  Paid = 'PAID',
+  Shipped = 'SHIPPED',
+  Delivered = 'DELIVERED',
+  Cancelled = 'CANCELLED',
+}
+
+export interface CartItem {
+  product_id: number;
+  quantity: number;
+  price: string; // Or number, depending on what the driver returns
+  stock: number;
+}
