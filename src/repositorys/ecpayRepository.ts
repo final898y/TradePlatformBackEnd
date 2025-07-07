@@ -35,3 +35,26 @@ export async function getPaymentByTransactionId(
   }
   return { success: true, statusCode: 200, message: '查詢付款資料成功', data: data };
 }
+
+export async function getPaymentByOrderNumber(
+  orderNumber: string,
+): Promise<ItransportResult<Payments>> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select(
+      `
+      *,
+      payments (*)
+    `,
+    )
+    .eq('order_number', orderNumber)
+    .order('created_at', { referencedTable: 'payments', ascending: false })
+    .limit(1, { referencedTable: 'payments' })
+    .single();
+
+  if (error) {
+    return { success: false, statusCode: 500, message: error.message };
+  }
+  const paymentData = Array.isArray(data.payments) ? data.payments[0] : data.payments;
+  return { success: true, statusCode: 200, message: '查詢付款資料成功', data: paymentData };
+}

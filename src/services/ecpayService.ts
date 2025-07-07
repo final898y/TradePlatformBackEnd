@@ -142,4 +142,18 @@ export async function getPaymentByTransactionId(
   return await ecpayRepository.getPaymentByTransactionId(transactionId);
 }
 
+export async function getPaymentByOrderNumber(
+  req: Request,
+): Promise<ItransportResult<payModel.Payments>> {
+  const orderNumber = req.query.orderNumber;
+  if (typeof orderNumber !== 'string') {
+    return {
+      success: false,
+      statusCode: 400,
+      message: `Request.Query資料格式錯誤`,
+    };
+  }
+  return await ecpayRepository.getPaymentByOrderNumber(orderNumber);
+}
+
 export { getCheckOut, getPayResult, queryTradeInfo };
