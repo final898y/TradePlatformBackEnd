@@ -34,6 +34,50 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
+-- Name: insert_payment_by_order_number(text, text, integer, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$DECLARE
+  v_order_id INTEGER;
+  v_payment_id INTEGER;
+BEGIN
+  -- 查詢訂單 ID
+  SELECT id INTO v_order_id
+  FROM orders
+  WHERE order_number = p_order_number;
+
+  -- 如果查無訂單，丟出錯誤
+  IF NOT FOUND THEN
+    RAISE EXCEPTION '查無對應的訂單編號：%', p_order_number;
+  END IF;
+
+  -- 插入付款資料
+  INSERT INTO payments (
+    order_id,
+    payment_method,
+    transaction_id,
+    amount,
+    status
+  )
+  VALUES (
+    v_order_id,
+    p_payment_method,
+    p_transaction_id,
+    p_amount,
+    'PENDING'
+  )
+  RETURNING id INTO v_payment_id;
+
+  -- 回傳插入的付款 ID
+  RETURN v_payment_id;
+END;$$;
+
+
+ALTER FUNCTION public.insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text) OWNER TO postgres;
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -217,7 +261,10 @@ CREATE TABLE public.orders (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     paid_at timestamp with time zone,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT orders_status_check CHECK (((status)::text = ANY (ARRAY[('pending'::character varying)::text, ('paid'::character varying)::text, ('shipped'::character varying)::text, ('delivered'::character varying)::text, ('cancelled'::character varying)::text]))),
+    recipient_email character varying(255) NOT NULL,
+    order_number character varying(50) NOT NULL,
+    order_note text DEFAULT ''::text,
+    CONSTRAINT orders_status_check CHECK (((status)::text = ANY (ARRAY[('PENDING'::character varying)::text, ('PAID'::character varying)::text, ('SHIPPED'::character varying)::text, ('DELIVERED'::character varying)::text, ('CANCELLED'::character varying)::text]))),
     CONSTRAINT orders_total_amount_check CHECK ((total_amount >= (0)::numeric))
 );
 
@@ -261,7 +308,7 @@ CREATE TABLE public.payments (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     CONSTRAINT payments_amount_check CHECK ((amount >= (0)::numeric)),
-    CONSTRAINT payments_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'paid'::text, 'failed'::text])))
+    CONSTRAINT payments_status_check CHECK ((status = ANY (ARRAY['PENDING'::text, 'PAID'::text, 'FAILED'::text])))
 );
 
 
@@ -613,6 +660,14 @@ ALTER TABLE ONLY public.categories
 
 ALTER TABLE ONLY public.order_items
     ADD CONSTRAINT order_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders orders_order_number_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_order_number_key UNIQUE (order_number);
 
 
 --
@@ -1036,6 +1091,15 @@ GRANT USAGE ON SCHEMA public TO postgres;
 GRANT USAGE ON SCHEMA public TO anon;
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT USAGE ON SCHEMA public TO service_role;
+
+
+--
+-- Name: FUNCTION insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text); Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON FUNCTION public.insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text) TO anon;
+GRANT ALL ON FUNCTION public.insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text) TO authenticated;
+GRANT ALL ON FUNCTION public.insert_payment_by_order_number(p_order_number text, p_transaction_id text, p_amount integer, p_payment_method text) TO service_role;
 
 
 --

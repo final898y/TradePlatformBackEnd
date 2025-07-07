@@ -11,6 +11,19 @@ This document outlines the database schema, including table structures, foreign 
 
 ---
 
+### `insert_payment_by_order_number()`
+
+- **Description:** A PL/pgSQL function that inserts a new payment record into the `payments` table based on an order number.
+- **Parameters:**
+  - `p_order_number` (text): The order number to associate the payment with.
+  - `p_transaction_id` (text): The transaction ID from the payment gateway.
+  - `p_amount` (integer): The payment amount.
+  - `p_payment_method` (text): The method of payment (e.g., 'ECPay', 'LinePay').
+- **Behavior:** It first finds the `order_id` from the `orders` table using the provided `p_order_number`. If the order is not found, it raises an exception. Otherwise, it inserts a new record into the `payments` table with a status of 'PENDING'.
+- **Returns:** `integer` (The ID of the newly created payment record).
+
+---
+
 ## Table Structures
 
 ### `users`
@@ -19,16 +32,16 @@ Represents the users of the application.
 
 **Columns**
 
-| Name            | Type                       | Constraints               | Default                   |
-| --------------- | -------------------------- | ------------------------- | ------------------------- |
-| `id`            | `bigint`                   | `NOT NULL`, `PRIMARY KEY` | `nextval('users_id_seq')` |
-| `uuid`          | `uuid`                     | `NOT NULL`, `UNIQUE`      |                           |
-| `email`         | `varchar(255)`             | `UNIQUE`                  |                           |
-| `password_hash` | `varchar(255)`             |                           |                           |
-| `name`          | `varchar(100)`             |                           |                           |
-| `created_at`    | `timestamp with time zone` |                           | `CURRENT_TIMESTAMP`       |
-| `updated_at`    | `timestamp with time zone` |                           | `CURRENT_TIMESTAMP`       |
-| `mobilephone`   | `text`                     | `NOT NULL`, `UNIQUE`      | `''::text`                |
+| Name            | Type                       | Constraints                               | Default                   |
+| --------------- | -------------------------- | ----------------------------------------- | ------------------------- |
+| `id`            | `bigint`                   | `NOT NULL`, `PRIMARY KEY`                 | `nextval('users_id_seq')` |
+| `uuid`          | `uuid`                     | `NOT NULL`, `UNIQUE` (`users_uuid_key`)   |                           |
+| `email`         | `varchar(255)`             | `UNIQUE` (`users_email_key`)              |                           |
+| `password_hash` | `varchar(255)`             |                                           |                           |
+| `name`          | `varchar(100)`             |                                           |                           |
+| `created_at`    | `timestamp with time zone` |                                           | `CURRENT_TIMESTAMP`       |
+| `updated_at`    | `timestamp with time zone` |                                           | `CURRENT_TIMESTAMP`       |
+| `mobilephone`   | `text`                     | `NOT NULL`, `UNIQUE` (`users_cellphone_key`) | `''::text`                |
 
 **Triggers**
 
@@ -66,10 +79,10 @@ Stores main product categories.
 
 **Columns**
 
-| Name   | Type          | Constraints               | Default                        |
-| ------ | ------------- | ------------------------- | ------------------------------ |
-| `id`   | `integer`     | `NOT NULL`, `PRIMARY KEY` | `nextval('categories_id_seq')` |
-| `name` | `varchar(50)` | `NOT NULL`, `UNIQUE`      |                                |
+| Name   | Type          | Constraints                      | Default                        |
+| ------ | ------------- | -------------------------------- | ------------------------------ |
+| `id`   | `integer`     | `NOT NULL`, `PRIMARY KEY`        | `nextval('categories_id_seq')` |
+| `name` | `varchar(50)` | `NOT NULL`, `UNIQUE` (`categories_name_key`) |                                |
 
 ---
 
@@ -214,22 +227,22 @@ Stores customer order information.
 
 **Columns**
 
-| Name               | Type                       | Constraints                                              | Default                    |
-| ------------------ | -------------------------- | -------------------------------------------------------- | -------------------------- |
-| `id`               | `integer`                  | `NOT NULL`, `PRIMARY KEY`                                | `nextval('orders_id_seq')` |
-| `order_number`     | `VARCHAR(50)`              | `NOT NULL`,'UNIQUE'                                      |                            |
-| `user_id`          | `bigint`                   | `NOT NULL`                                               |                            |
-| `total_amount`     | `numeric(10,2)`            | `NOT NULL`, `CHECK (total_amount >= 0)`                  |                            |
-| `status`           | `varchar(20)`              | `NOT NULL`, `CHECK (status IN ('pending', 'paid', ...))` |                            |
-| `shipping_address` | `text`                     | `NOT NULL`                                               |                            |
-| `order_note      ` | `text`                     |                                                          |                            |
-| `recipient_name`   | `varchar(100)`             | `NOT NULL`                                               |                            |
-| `recipient_phone`  | `varchar(20)`              | `NOT NULL`                                               |                            |
-| `recipient_email`  | `varchar(255)`             | `NOT NULL`                                               |                            |
-| `payment_method`   | `text`                     | `NOT NULL`                                               |                            |
-| `created_at`       | `timestamp with time zone` |                                                          | `CURRENT_TIMESTAMP`        |
-| `paid_at`          | `timestamp with time zone` |                                                          |                            |
-| `updated_at`       | `timestamp with time zone` |                                                          | `CURRENT_TIMESTAMP`        |
+| Name               | Type                       | Constraints                                                                                                     | Default                    |
+| ------------------ | -------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `id`               | `integer`                  | `NOT NULL`, `PRIMARY KEY`                                                                                       | `nextval('orders_id_seq')` |
+| `order_number`     | `VARCHAR(50)`              | `NOT NULL`, `UNIQUE` (`orders_order_number_key`)                                                                |                            |
+| `user_id`          | `bigint`                   | `NOT NULL`                                                                                                      |                            |
+| `total_amount`     | `numeric(10,2)`            | `NOT NULL`, `CHECK (total_amount >= 0)`                                                                         |                            |
+| `status`           | `varchar(20)`              | `NOT NULL`, `CHECK (status IN ('PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'))`                         |                            |
+| `shipping_address` | `text`                     | `NOT NULL`                                                                                                      |                            |
+| `order_note`       | `text`                     |                                                                                                                 | `''::text`                 |
+| `recipient_name`   | `varchar(100)`             | `NOT NULL`                                                                                                      |                            |
+| `recipient_phone`  | `varchar(20)`              | `NOT NULL`                                                                                                      |                            |
+| `recipient_email`  | `varchar(255)`             | `NOT NULL`                                                                                                      |                            |
+| `payment_method`   | `text`                     | `NOT NULL`                                                                                                      |                            |
+| `created_at`       | `timestamp with time zone` |                                                                                                                 | `CURRENT_TIMESTAMP`        |
+| `paid_at`          | `timestamp with time zone` |                                                                                                                 |                            |
+| `updated_at`       | `timestamp with time zone` |                                                                                                                 | `CURRENT_TIMESTAMP`        |
 
 **Foreign Keys**
 
@@ -279,9 +292,9 @@ Stores payment transaction details for orders.
 | `id` | `integer` | `NOT NULL`, `PRIMARY KEY` | `nextval('payments_id_seq')` |
 | `order_id` | `integer` | | |
 | `payment_method` | `text` | `NOT NULL` | |
-| `transaction_id` | `text` | `NOT NULL`, `UNIQUE` | |
+| `transaction_id` | `text` | `NOT NULL`, `UNIQUE` (`payments_transaction_id_key`) | |
 | `amount` | `numeric(10,2)` | `NOT NULL`, `CHECK (amount >= 0)` | |
-| `status` | `text` | `NOT NULL`, `CHECK (status IN ('pending', 'paid', 'failed'))` | |
+| `status` | `text` | `NOT NULL`, `CHECK (status IN ('PENDING', 'PAID', 'FAILED'))` | |
 | `paid_at` | `timestamp with time zone` | | |
 | `created_at` | `timestamp with time zone` | | `now()` |
 | `updated_at` | `timestamp with time zone` | | `now()` |
