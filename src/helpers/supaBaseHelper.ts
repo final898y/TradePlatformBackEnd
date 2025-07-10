@@ -6,9 +6,7 @@ type users = Tables<'users'>;
 type TableNames = keyof Database['public']['Tables'];
 
 type QueryResult<T> = { success: true; data: T[] } | { success: false; error: string };
-const SUPABASE_URL = 'https://mcvqgvjxfhohqrhwzkyq.supabase.co';
-
-export const supabase = createClient<Database>(SUPABASE_URL, env.SUPABASE_KEY);
+export const supabase = createClient<Database>(env.SUPABASE_URL, env.SUPABASE_KEY);
 
 export async function getUserIdByUuid(userUuid: string): Promise<number | null> {
   const { data, error } = await supabase.from('users').select('id').eq('uuid', userUuid).single();

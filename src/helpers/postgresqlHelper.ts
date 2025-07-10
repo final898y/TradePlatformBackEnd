@@ -2,9 +2,9 @@ import { Pool } from 'pg';
 import env from '../configs/env.js';
 
 const pgSQLpool = new Pool({
-  host: 'aws-0-ap-southeast-1.pooler.supabase.com',
-  user: 'postgres.mcvqgvjxfhohqrhwzkyq',
-  password: env.SUPABASE_DB_PW,
+  host: env.pgSQLHOST,
+  user: env.pgUser,
+  password: env.pgPASSWORD,
   database: 'postgres',
   port: 5432,
   max: 20,

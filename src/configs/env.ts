@@ -30,6 +30,10 @@ const envSchema = z.object({
   //Supabase
   SUPABASE_KEY: z.string(),
   SUPABASE_DB_PW: z.string(),
+  SUPABASE_URL: z.string(),
+  pgSQLHOST: z.string(),
+  pgUser: z.string(),
+  pgPASSWORD: z.string(),
 });
 
 // 2. 解析並驗證環境變數

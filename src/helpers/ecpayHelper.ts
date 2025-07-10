@@ -40,18 +40,13 @@ export function generateMerchantTradeNo(): string {
   // 1. 取得當前時間並格式化為 yyyymmddHHMMss
   const now = new Date();
   const timePart = now
-    .toISOString() // 例如 2025-06-29T01:23:45.678Z
+    .toISOString() // e.g. 2025-07-10T14:25:30.000Z
     .replace(/[-T:Z.]/g, '') // 移除不必要符號
-    .substring(0, 14); // 取得前 14 字元：20250629012345
+    .substring(0, 14); // 取前 14 位 → "20250710142530"
 
-  // 2. 產生亂數，補滿總長度為 20
-  const randomLength = 20 - timePart.length; // 剩下6位
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let randomPart = '';
-  for (let i = 0; i < randomLength; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    randomPart += characters[randomIndex];
-  }
+  // 2. 使用 crypto 產生 10 字元亂數（對應 5 bytes）
+  const randomPart = crypto.randomBytes(5).toString('hex').toUpperCase(); // 5 bytes → 10 hex 字元
 
-  return timePart + randomPart;
+  // 3. 合併時間與亂數，共 20 字元
+  return timePart + randomPart.slice(0, 6); // 保留原來6碼長度
 }

@@ -56,5 +56,8 @@ export async function getPaymentByOrderNumber(
     return { success: false, statusCode: 500, message: error.message };
   }
   const paymentData = Array.isArray(data.payments) ? data.payments[0] : data.payments;
+  if (!paymentData) {
+    return { success: false, statusCode: 404, message: '找不到此訂單的付款資料' };
+  }
   return { success: true, statusCode: 200, message: '查詢付款資料成功', data: paymentData };
 }

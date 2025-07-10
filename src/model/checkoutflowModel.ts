@@ -27,7 +27,7 @@ export const orderItemSchema = z.object({
 export const orderDetailSchema = z.object({
   order_id: z.number(),
   order_number: z.string(),
-  total_amount: z.string(), // Assuming total_amount is a string from the DB
+  total_amount: z.string(), // node‑postgres
   status: z.string(),
   shipping_address: z.string(),
   order_note: z.string().nullable(),
@@ -45,7 +45,7 @@ export type OrderDetail = z.infer<typeof orderDetailSchema>;
 export const orderListItemSchema = z.object({
   id: z.number(),
   order_number: z.string(),
-  total_amount: z.number(), // numeric from DB is returned as string
+  total_amount: z.number(), // supabase-js
   status: z.string(), // This is order status
   recipient_name: z.string(),
   created_at: z.string(),

@@ -7,8 +7,8 @@ const config: Config = {
     cancelUrl: `${baseUrl}/linepay/cancel`,
   },
   ecpayAioCheckOutconfigs: {
-    MerchantID: '',
-    ReturnURL: '',
+    MerchantID: '3002607',
+    ReturnURL: `${baseUrl}/api/pay/ecpay/getpayresult`,
     EncryptType: 1,
   },
   allowedOrigins: ['https://shopping-web-grok.vercel.app', 'https://localhost:5173'],

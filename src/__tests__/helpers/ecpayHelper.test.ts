@@ -59,13 +59,18 @@ describe('generateMerchantTradeNo', () => {
     expect(/^[A-Za-z0-9]{20}$/.test(tradeNo)).toBe(true);
   });
 
-  it('應該產生不重複的編號', () => {
+  it('應該產生不重複的編號（統計性測試）', () => {
     const results = new Set<string>();
+    const duplicates: string[] = [];
+
     for (let i = 0; i < 1000; i++) {
       const tradeNo = generateMerchantTradeNo();
-      expect(results.has(tradeNo)).toBe(false);
+      if (results.has(tradeNo)) duplicates.push(tradeNo);
       results.add(tradeNo);
     }
+
+    // 如果有重複，顯示出來
+    expect(duplicates).toEqual([]);
   });
 
   it('應該以 14 位數的時間戳字串開頭', () => {

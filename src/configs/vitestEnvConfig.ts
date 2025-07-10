@@ -57,8 +57,12 @@ export const testEnv = {
   linepayapi_ChannelSecretKey: 'envVars.linepayapi_ChannelSecretKey',
   tradeplatform_Superbase_pw: 'envVars.tradeplatform_Superbase_pw',
   rediscloud_freedb_pw: 'envVars.rediscloud_freedb_pw',
-  SUPABASE_KEY: 'sb_secret_Y8SXTO0dMHPUsyJ6Bowl2w_PrlNyVHp',
+  SUPABASE_KEY: 'envVars.SUPABASE_KEY',
   SUPABASE_DB_PW: 'envVars.SUPABASE_DB_PW',
+  SUPABASE_URL: 'envVars.SUPABASE_URL',
+  pgSQLHOST: 'envars.pgSQLHOST',
+  pgUser: 'envVars.pgUser',
+  pgPASSWORD: 'evnVars.pgPASSWORD',
 };
 
 // export const testEnv = isProduction
