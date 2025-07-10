@@ -35,3 +35,18 @@ function compareFn(keyA: string, keyB: string) {
   }
   return keyA.length - keyB.length; // 若字母相同，短的在前
 }
+
+export function generateMerchantTradeNo(): string {
+  // 1. 取得當前時間並格式化為 yyyymmddHHMMss
+  const now = new Date();
+  const timePart = now
+    .toISOString() // e.g. 2025-07-10T14:25:30.000Z
+    .replace(/[-T:Z.]/g, '') // 移除不必要符號
+    .substring(0, 14); // 取前 14 位 → "20250710142530"
+
+  // 2. 使用 crypto 產生 10 字元亂數（對應 5 bytes）
+  const randomPart = crypto.randomBytes(5).toString('hex').toUpperCase(); // 5 bytes → 10 hex 字元
+
+  // 3. 合併時間與亂數，共 20 字元
+  return timePart + randomPart.slice(0, 6); // 保留原來6碼長度
+}

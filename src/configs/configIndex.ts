@@ -1,17 +1,21 @@
 import type { Config } from '../types/configType.js';
 
 const env = process.env.NODE_ENV || 'development';
-let configPath = `./config.${env}.js`;
+
 let rawConfigModule: { default: Config };
 
-try {
-  rawConfigModule = await import(configPath);
-} catch (error) {
-  console.error(`Failed to load config for ${env}:`, error);
-  rawConfigModule = await import('./config.development.js');
+switch (env) {
+  case 'production':
+    rawConfigModule = await import('./config.production.js');
+    break;
+  case 'development':
+    rawConfigModule = await import('./config.development.js');
+    break;
+  default:
+    console.warn(`Unknown NODE_ENV "${env}", falling back to development config.`);
+    rawConfigModule = await import('./config.development.js');
+    break;
 }
 
 const config: Config = rawConfigModule.default;
-
-// config 是一個 module object，要取 default export
 export default config;

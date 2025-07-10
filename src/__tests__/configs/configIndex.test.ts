@@ -24,7 +24,7 @@ describe('configIndex', () => {
     );
 
     expect(config.allowedOrigins).toContain('https://shopping-web-grok.vercel.app');
-    expect(config.redisconfig.port).toBe(15546);
+    expect(config.redisconfig.port).toBe(11502);
   });
 
   it('should load development config when NODE_ENV is not production', async () => {
@@ -35,7 +35,7 @@ describe('configIndex', () => {
     expect(config.linepayredirectUrls.cancelUrl).toBe('http://localhost:5173/linepay/cancel');
 
     expect(config.allowedOrigins).toContain('http://localhost:3000');
-    expect(config.redisconfig.port).toBe(15546);
+    expect(config.redisconfig.port).toBe(11502);
   });
   it('should load development config when NODE_ENV is undefined', async () => {
     process.env.NODE_ENV = undefined; // 模擬 NODE_ENV 為 undefined
@@ -45,6 +45,6 @@ describe('configIndex', () => {
     expect(config.linepayredirectUrls.cancelUrl).toBe('http://localhost:5173/linepay/cancel');
 
     expect(config.allowedOrigins).toContain('http://localhost:3000');
-    expect(config.redisconfig.port).toBe(15546);
+    expect(config.redisconfig.port).toBe(11502);
   });
 });

@@ -1,21 +1,25 @@
 import { z } from 'zod';
+import { Database } from '../model/supabaseModel.js';
+
+export type Payments = Database['public']['Tables']['payments']['Row'];
 
 export const ecPayBackendOutputSchema = z.object({
   CheckMacValue: z.string(),
   MerchantTradeNo: z.string(),
+  MerchantID: z.string(),
+  ReturnURL: z.string(),
+  EncryptType: z.number(),
 });
 export type ecPayBackendOutput = z.infer<typeof ecPayBackendOutputSchema>;
 
 export const ecPayFrountendInputSchema = z.object({
-  MerchantID: z.string(),
+  OrderNumber: z.string(),
   MerchantTradeDate: z.string(),
   PaymentType: z.string(),
   TotalAmount: z.number(),
   TradeDesc: z.string(),
   ItemName: z.string(),
-  ReturnURL: z.string(),
   ChoosePayment: z.string(),
-  EncryptType: z.number(),
   ClientBackURL: z.string().optional(),
 });
 export type ecPayFrountendInput = z.infer<typeof ecPayFrountendInputSchema>;
@@ -69,6 +73,36 @@ export const PaymentResultSchema = z.object({
   CheckMacValue: z.string().optional(),
 });
 export type PaymentResult = z.infer<typeof PaymentResultSchema>;
+
+export const ecPayQueryTradeInfoSchema = z.object({
+  MerchantID: z.string(),
+  MerchantTradeNo: z.string(),
+  TimeStamp: z.number(),
+  PlatformID: z.string().optional(),
+  CheckMacValue: z.string(),
+});
+export type ecPayQueryTradeInfo = z.infer<typeof ecPayQueryTradeInfoSchema>;
+
+export const ecPayQueryTradeInfoResponseSchema = z.object({
+  MerchantID: z.string(), // 商家代號
+  MerchantTradeNo: z.string(), // 商家訂單編號
+  StoreID: z.string().optional(), // 商店代號，可能為空
+  TradeNo: z.string(), // 綠界交易編號
+  TradeAmt: z.string().regex(/^\d+$/), // 交易金額（字串但應為數字格式）
+  PaymentDate: z.string().datetime({ offset: true }).or(z.string()), // 付款時間
+  PaymentType: z.string(), // 付款方式
+  HandlingCharge: z.string().optional(), // 手續費
+  PaymentTypeChargeFee: z.string().optional(), // 付款類型的費用
+  TradeDate: z.string(), // 建立時間
+  TradeStatus: z.enum(['0', '1', '10200095']), // 交易狀態
+  ItemName: z.string(),
+  CustomField1: z.string().optional(),
+  CustomField2: z.string().optional(),
+  CustomField3: z.string().optional(),
+  CustomField4: z.string().optional(),
+  CheckMacValue: z.string(), // 回傳的 CheckMacValue
+});
+export type ecPayQueryTradeInfoResponse = z.infer<typeof ecPayQueryTradeInfoResponseSchema>;
 
 //LinePay----------
 const productSchema = z.object({
@@ -136,9 +170,9 @@ export const LinePaymentPRResponseSchema = z.object({
 export type LinePaymentPRResponse = z.infer<typeof LinePaymentPRResponseSchema>;
 
 //LINE Pay Payment confirmation
-export const LinePaymentPCFrountendInputSchema =z.object({
-  transactionId:z.string(),
-  orderId:z.string(),
+export const LinePaymentPCFrountendInputSchema = z.object({
+  transactionId: z.string(),
+  orderId: z.string(),
 });
 export const LinePaymentPCRequestSchema = z.object({
   amount: z.number(),
@@ -146,22 +180,31 @@ export const LinePaymentPCRequestSchema = z.object({
 });
 const payInfoSchema = z.object({
   method: z.string(),
-  amount: z.number()
+  amount: z.number(),
 });
 
 const infoSchema = z.object({
   orderId: z.string(),
   transactionId: z.string(),
-  payInfo: z.array(payInfoSchema)
+  payInfo: z.array(payInfoSchema),
 });
 
 export const LinePaymentPCResponseSchema = z.object({
   returnCode: z.literal('0000'),
   returnMessage: z.string(),
-  info: infoSchema
+  info: infoSchema,
 });
 export type LinePaymentPCResponse = z.infer<typeof LinePaymentPCResponseSchema>;
 
+export const FrountendPaymentInsertSchema = z.object({
+  order_number: z.string(),
+  payment_method: z.string(),
+  transaction_id: z.string(),
+  amount: z.number(),
+  status: z.string(),
+});
+
+export type FrountendPaymentInsert = z.infer<typeof FrountendPaymentInsertSchema>;
 
 // interface ecPayBackendOutput {
 //   CheckMacValue: string;

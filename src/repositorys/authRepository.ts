@@ -1,5 +1,5 @@
-import * as redisHelper from '../helpers/redisHelper.js';
 import ItransportResult from '../model/transportModel.js';
+import * as redisHelper from '../helpers/redisHelper.js';
 
 export const searchTokenbyRedis = async (
   token: string,
