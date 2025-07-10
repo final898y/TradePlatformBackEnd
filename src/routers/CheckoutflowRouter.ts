@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/createOrderFromCart', wrapAsync(CheckoutflowController.createOrderFromCart));
 router.get('/order/:orderNumber', wrapAsync(CheckoutflowController.getOrderByOrderNumber));
+router.get('/orders', wrapAsync(CheckoutflowController.getOrdersByUser));
 
 export default router;

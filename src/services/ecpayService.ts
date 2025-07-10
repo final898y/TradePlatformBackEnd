@@ -15,6 +15,8 @@ async function getCheckOut(req: Request): Promise<payModel.ecPayBackendOutput> {
   if (!parseResult.success) {
     throw new Error(`資料格式錯誤: ${JSON.stringify(parseResult.error)}`);
   }
+  //TODO: 檢查 OrderNumber 在資料庫中對應的多項PAYMENT中是否已經付款完成過。
+
   const MerchantTradeNo = generateMerchantTradeNo();
   const { OrderNumber, ...parseResultWithoutOrderNumber } = parseResult.data;
 

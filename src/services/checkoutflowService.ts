@@ -1,7 +1,11 @@
 import * as checkoutflowRepository from '../repositorys/checkoutflowRepository.js';
 import ItransportResult from '../model/transportModel.js';
 import { Request } from 'express';
-import { checkoutRequestSchema, OrderDetail } from '../model/checkoutflowModel.js';
+import {
+  checkoutRequestSchema,
+  OrderDetail,
+  OrderListItem,
+} from '../model/checkoutflowModel.js';
 
 export const createOrderFromCart = async (
   req: Request,
@@ -32,5 +36,20 @@ export const getOrderByOrderNumber = async (
     return await checkoutflowRepository.getOrderByOrderNumber(orderNumber);
   } catch (error) {
     throw error;
+  }
+};
+
+export const getOrdersByUserUuid = async (
+  userUuid: string,
+): Promise<ItransportResult<OrderListItem[]>> => {
+  try {
+    return await checkoutflowRepository.getOrdersByUserUuid(userUuid);
+  } catch (error) {
+    console.error('Service error in getOrdersByUserUuid:', error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred in the service layer.');
+    }
   }
 };

@@ -7,15 +7,16 @@
 ### 1. 檢查服務狀態
 
 - **核心功能描述**: 此 API 用於確認後端服務是否正常運行。當您呼叫此端點時，如果服務正常，它會回傳一個簡單的成功訊息。這通常用於負載平衡器、容器協調工具 (如 Kubernetes) 或監控系統，以自動檢查應用程式的健康狀況。
-- **介面位址**: `/health`
+- **介面位址**: `/health/check`
 - **方法**: `GET`
 - **需要登入**: 否
 - **請求參數**: 無
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
   ```json
   {
-    "status": "ok",
-    "message": "API is healthy"
+    "server": "online",
+    "redis": "online",
+    "supabase": "online"
   }
   ```
 
@@ -36,7 +37,20 @@
     "g_csrf_token": "YOUR_CSRF_TOKEN"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "Google ID Token 驗證成功",
+    "data": {
+      "id": 1,
+      "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "name": "使用者姓名",
+      "email": "user@example.com",
+      "mobilephone": "0912345678"
+    }
+  }
+  ```
 
 ---
 
@@ -47,7 +61,14 @@
 - **方法**: `GET`
 - **需要登入**: 否
 - **請求參數**: 無
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "建立 CSRF Token 成功",
+    "data": "_A_RANDOM_CSRF_TOKEN_STRING_"
+  }
+  ```
 
 ---
 
@@ -58,7 +79,14 @@
 - **方法**: `POST`
 - **需要登入**: 是 (需要有效的 Refresh Token)
 - **請求參數**: 無 (Token 從 Cookie 讀取)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "new accessToken"
+  }
+  ```
+  *註: 新的 Access Token 會被設定在 HttpOnly 的 Cookie 中。*
 
 ---
 
@@ -71,11 +99,17 @@
 - **請求參數 (Body)**:
   ```json
   {
-    "mobilephone": "USER_MOBILE_PHONE",
+    "mobilephone": "0912345678",
     "g_csrf_token": "YOUR_CSRF_TOKEN"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "登出成功"
+  }
+  ```
 
 ---
 
@@ -99,7 +133,10 @@
     "StoreName": "Your Store"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  "註冊成功"
+  ```
 
 ---
 
@@ -116,7 +153,14 @@
     "Password": "your_password"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "message": "登入成功",
+    "JwtToket": "YOUR_JWT_ACCESS_TOKEN"
+  }
+  ```
+  *註: Access Token 和 Refresh Token 皆會被設定在 HttpOnly 的 Cookie 中。*
 
 ---
 
@@ -134,7 +178,10 @@
     "Email": "johnathan.doe@example.com"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  "更新成功"
+  ```
 
 ---
 
@@ -145,7 +192,20 @@
 - **方法**: `GET`
 - **需要登入**: 否
 - **請求參數 (Query)**: `uid={USER_UUID}`
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "statusCode": 200,
+    "message": "查詢成功",
+    "data": {
+      "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "mobilephone": "0912345678"
+    }
+  }
+  ```
 
 ---
 
@@ -163,7 +223,24 @@
   - `categoryId` (optional): 分類 ID
   - `subCategoryId` (optional): 子分類 ID
   - `search` (optional): 搜尋關鍵字
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "data": [
+      {
+        "id": 1,
+        "name": "高效能筆記型電腦",
+        "price": 45000,
+        "description": "搭載最新處理器與顯示卡",
+        "stock": 50,
+        "image_url": "https://example.com/laptop.jpg",
+        "categoryId": 1,
+        "subCategoryId": 101
+      }
+    ],
+    "total": 100
+  }
+  ```
 
 ---
 
@@ -174,7 +251,19 @@
 - **方法**: `GET`
 - **需要登入**: 否
 - **請求參數 (Path)**: `id` (商品 ID)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "id": 1,
+    "name": "高效能筆記型電腦",
+    "price": 45000,
+    "description": "搭載最新處理器與顯示卡",
+    "stock": 50,
+    "image_url": "https://example.com/laptop.jpg",
+    "category_id": 1,
+    "sub_category_id": 101
+  }
+  ```
 
 ---
 
@@ -185,7 +274,35 @@
 - **方法**: `GET`
 - **需要登入**: 否
 - **請求參數**: 無
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "電腦硬體",
+      "subCategories": [
+        {
+          "id": 101,
+          "name": "筆記型電腦"
+        },
+        {
+          "id": 102,
+          "name": "桌上型電腦"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "手機通訊",
+      "subCategories": [
+        {
+          "id": 201,
+          "name": "智慧型手機"
+        }
+      ]
+    }
+  ]
+  ```
 
 ---
 
@@ -200,12 +317,18 @@
 - **請求參數 (Body)**:
   ```json
   {
-    "userUuid": "USER_UUID",
+    "userUuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     "productId": 123,
     "quantity": 1
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "商品已成功加入購物車"
+  }
+  ```
 
 ---
 
@@ -218,12 +341,18 @@
 - **請求參數 (Body)**:
   ```json
   {
-    "userUuid": "USER_UUID",
+    "userUuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     "productId": 123,
     "quantity": 3
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "購物車商品數量更新成功"
+  }
+  ```
 
 ---
 
@@ -235,7 +364,13 @@
 - **需要登入**: 是
 - **請求參數 (Path)**: `productId` (商品 ID)
 - **請求參數 (Query)**: `userUuid` (使用者 UUID)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "商品已從購物車移除"
+  }
+  ```
 
 ---
 
@@ -246,7 +381,13 @@
 - **方法**: `DELETE`
 - **需要登入**: 是
 - **請求參數 (Query)**: `userUuid` (使用者 UUID)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "購物車已清空"
+  }
+  ```
 
 ---
 
@@ -257,7 +398,30 @@
 - **方法**: `GET`
 - **需要登入**: 是
 - **請求參數 (Query)**: `userUuid` (使用者 UUID)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "成功取得購物車內容",
+    "data": [
+      {
+        "quantity": 2,
+        "products": {
+          "id": 1,
+          "category_id": 1,
+          "name": "高效能筆記型電腦",
+          "description": "搭載最新處理器與顯示卡",
+          "price": 45000,
+          "image_url": "https://example.com/laptop.jpg",
+          "is_published": true,
+          "is_deleted": false,
+          "created_at": "2025-07-10T10:00:00.000Z",
+          "updated_at": "2025-07-10T10:00:00.000Z"
+        }
+      }
+    ]
+  }
+  ```
 
 ---
 
@@ -272,15 +436,25 @@
 - **請求參數 (Body)**:
   ```json
   {
-    "userUuid": "USER_UUID",
-    "shipping_address": "Delivery Address",
-    "recipient_name": "Recipient Name",
+    "userUuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "shipping_address": "台北市信義區市府路45號",
+    "order_note": "請盡快出貨",
+    "recipient_name": "王大明",
     "recipient_phone": "0911222333",
-    "recipient_email": "recipient@email.com",
+    "recipient_email": "recipient@example.com",
     "payment_method": "ecpay"
   }
   ```
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "message": "創建訂單成功",
+    "data": {
+      "orderNumber": "ORD-20250710-ABC123XYZ"
+    }
+  }
+  ```
 
 ---
 
@@ -291,44 +465,163 @@
 - **方法**: `GET`
 - **需要登入**: 是
 - **請求參數 (Path)**: `orderNumber` (訂單編號)
-- **回應類型**: JSON
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "statusCode": 200,
+    "message": "查詢成功",
+    "data": {
+      "order_id": 1,
+      "order_number": "ORD-20250710-ABC123XYZ",
+      "total_amount": "45000.00",
+      "status": "PENDING",
+      "shipping_address": "台北市信義區市府路45號",
+      "order_note": "請盡快出貨",
+      "recipient_name": "王大明",
+      "recipient_phone": "0911222333",
+      "recipient_email": "recipient@example.com",
+      "payment_method": "ecpay",
+      "created_at": "2025-07-10T12:00:00.000Z",
+      "paid_at": null,
+      "items": [
+        {
+          "product_id": 1,
+          "product_name": "高效能筆記型電腦",
+          "quantity": 1,
+          "unit_price": 45000
+        }
+      ]
+    }
+  }
+  ```
 
 ---
 
-### 2. ECPay - 取得結帳參數
+### 3. 根據使用者 UUID 查詢其所有訂單
+
+- **核心功能描述**: 根據使用者 UUID (userUuid) 查詢該使用者的所有歷史訂單列表。回傳的資料不包含訂單內的商品詳情，主要用於訂單列表頁的展示。每筆訂單會包含其最新一筆的付款狀態。
+- **介面位址**: `/checkoutflow/orders`
+- **方法**: `GET`
+- **需要登入**: 否 (但建議在前端實作中，此為登入後才能使用的功能)
+- **請求參數 (Query)**:
+  - `userUuid` (required): 要查詢的使用者 UUID。
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "success": true,
+    "statusCode": 200,
+    "message": "查詢訂單成功",
+    "data": [
+      {
+        "id": 1,
+        "order_number": "ORD-20250710-ABC123XYZ",
+        "total_amount": 45000,
+        "status": "PENDING",
+        "recipient_name": "王大明",
+        "created_at": "2025-07-10T12:00:00.000Z",
+        "payments": [
+          {
+            "status": "PENDING",
+            "payment_method": "ecpay"
+          }
+        ]
+      }
+    ]
+  }
+  ```
+- **錯誤回應**:
+  - `400 Bad Request`: 如果 `userUuid` 格式不正確或未提供。
+  - `404 Not Found`: 如果提供的 `userUuid` 在資料庫中不存在。
+
+---
+
+### 4. ECPay - 取得結帳參數
 
 - **核心功能描述**: 當使用者選擇使用 ECPay 付款時，前端需呼叫此 API 以取得向 ECPay 伺服器發起結帳請求所需的參數。後端會根據訂單資訊和 ECPay 的規則，產生一個包含 `MerchantTradeNo` 和 `CheckMacValue` 的物件，前端可利用這些參數來建立自動提交至 ECPay 的表單。
 - **介面位址**: `/pay/ecpay/getcheckout`
 - **方法**: `POST`
 - **需要登入**: 是
-- **請求參數 (Body)**: ECPay 前端輸入模型 (`ecPayFrountendInput`)
-- **回應類型**: JSON
+- **請求參數 (Body)**:
+  ```json
+  {
+    "OrderNumber": "ORD-20250710-ABC123XYZ",
+    "MerchantTradeDate": "2025/07/10 12:05:00",
+    "PaymentType": "aio",
+    "TotalAmount": 45000,
+    "TradeDesc": "電商平台商品一批",
+    "ItemName": "高效能筆記型電腦#滑鼠",
+    "ChoosePayment": "ALL",
+    "ClientBackURL": "https://your-frontend.com/checkout/complete"
+  }
+  ```
+- **回應類型 (200 OK)**: JSON
+  ```json
+  {
+    "CheckMacValue": "A_VALID_CHECK_MAC_VALUE",
+    "MerchantTradeNo": "YOUR_UNIQUE_MERCHANT_TRADE_NO",
+    "MerchantID": "3002607",
+    "ReturnURL": "https://your-backend.com/api/pay/ecpay/getpayresult",
+    "EncryptType": 1
+  }
+  ```
 
 ---
 
-### 3. ECPay - 接收付款結果通知
+### 5. ECPay - 接收付款結果通知
 
 - **核心功能描述**: 此 API 是提供給 ECPay 伺服器在使用者完成付款後，非同步通知我方系統付款結果的回調 (Callback) 端點。後端會驗證收到的 `CheckMacValue` 以確保請求來自 ECPay，驗證成功後會回傳 `1|OK`，並在背景更新對應訂單的付款狀態。
 - **介面位址**: `/pay/ecpay/getpayresult`
 - **方法**: `POST`
 - **需要登入**: 否 (由 ECPay 系統呼叫)
-- **請求參數 (Body)**: ECPay 付款結果 (`PaymentResult`)
+- **請求參數 (Body)**:
+  ```json
+  {
+    "MerchantID": "3002607",
+    "MerchantTradeNo": "YOUR_UNIQUE_MERCHANT_TRADE_NO",
+    "StoreID": "",
+    "RtnCode": "1",
+    "RtnMsg": "交易成功",
+    "TradeNo": "ECPAY_TRANSACTION_ID",
+    "TradeAmt": "45000",
+    "PaymentDate": "2025/07/10 12:10:00",
+    "PaymentType": "Credit_CreditCard",
+    "PaymentTypeChargeFee": "900",
+    "TradeDate": "2025/07/10 12:05:00",
+    "SimulatePaid": "0",
+    "CustomField1": "",
+    "CustomField2": "",
+    "CustomField3": "",
+    "CustomField4": "",
+    "CheckMacValue": "A_VALID_CHECK_MAC_VALUE_FROM_ECPAY"
+  }
+  ```
 - **回應類型**: string (`1|OK` 或錯誤訊息)
 
 ---
 
-### 4. LINE Pay - 發起付款請求
+### 6. LINE Pay - 發起付款請求
 
 - **核心功能描述**: 當使用者選擇 LINE Pay 付款時，前端呼叫此 API。後端會向 LINE Pay 伺服器發起一個 "Request" API 呼叫，如果成功，LINE Pay 會回傳一個付款頁面的網址 (`paymentUrl.web`)。後端再將此網址回傳給前端，前端需將使用者重導向至此網址以進行付款。
 - **介面位址**: `/pay/linepay/paymentRequest`
 - **方法**: `POST`
 - **需要登入**: 是
-- **請求參數 (Body)**: LINE Pay 前端輸入模型 (`linepayPRFrountendInputSchema`)
-- **回應類型**: string (LINE Pay 付款頁面網址)
+- **請求參數 (Body)**:
+  ```json
+  {
+    "name": "高效能筆記型電腦",
+    "quantity": 1,
+    "price": 45000
+  }
+  ```
+- **回應類型 (200 OK)**: string (LINE Pay 付款頁面網址)
+  ```
+  https://sandbox-web-pay.line.me/web/payment/wait?transactionReserveId=...
+  ```
 
 ---
 
-### 5. LINE Pay - 確認付款
+### 7. LINE Pay - 確認付款
 
 - **核心功能描述**: 使用者在 LINE Pay 付款頁面完成操作後，會被導回前端指定的 `confirmUrl`，並附帶 `transactionId` 和 `orderId`。前端接著呼叫此 API，後端會帶著這些資訊向 LINE Pay 伺服器發起 "Confirm" API 呼叫，以最終確認並完成這筆交易。
 - **介面位址**: `/pay/linepay/paymentConfirm`
@@ -341,7 +634,10 @@
     "orderId": "YOUR_ORDER_ID"
   }
   ```
-- **回應類型**: string (交易金額)
+- **回應類型 (200 OK)**: string (交易金額)
+  ```
+  45000
+  ```
 
 ---
 

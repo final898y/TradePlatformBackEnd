@@ -4,6 +4,7 @@ import ItransportResult from '../model/transportModel.js';
 import * as checkoutflowModel from '../model/checkoutflowModel.js';
 import { generateOrderNumber } from '../helpers/checkoutflowHelper.js';
 import { supabase } from '../helpers/supaBaseHelper.js';
+import { z } from 'zod';
 
 export async function createOrderFromCart(
   checkoutrequest: checkoutflowModel.CheckoutRequest,
@@ -203,4 +204,83 @@ export async function updatePayment(
     throw new Error(`更新付款資料失敗: ${error.message}`);
   }
   return data;
+}
+
+export async function getOrdersByUserUuid(
+  userUuid: string,
+): Promise<ItransportResult<checkoutflowModel.OrderListItem[]>> {
+  try {
+    // 1. 根據 uuid 查詢 user_id
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('uuid', userUuid)
+      .single();
+
+    if (userError || !userData) {
+      console.error('查詢使用者失敗:', userError);
+      return {
+        success: false,
+        statusCode: 404,
+        message: '找不到該使用者',
+      };
+    }
+    const userId = userData.id;
+
+    // 2. 根據 user_id 查詢訂單，並帶上付款資訊
+    const { data: ordersData, error: ordersError } = await supabase
+      .from('orders')
+      .select(
+        `
+        id,
+        order_number,
+        total_amount,
+        status,
+        recipient_name,
+        created_at,
+        payments (
+          status,
+          payment_method
+        )
+      `,
+      )
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .order('created_at', { foreignTable: 'payments', ascending: false })
+      .limit(1, { foreignTable: 'payments' });
+
+    if (ordersError) {
+      console.error('查詢訂單失敗:', ordersError);
+      return {
+        success: false,
+        statusCode: 500,
+        message: '查詢訂單時發生錯誤',
+      };
+    }
+
+    const validation = z.array(checkoutflowModel.orderListItemSchema).safeParse(ordersData);
+
+    if (!validation.success) {
+      console.error('資料庫查詢結果不符合預期格式：', validation.error);
+      return {
+        success: false,
+        statusCode: 500,
+        message: '資料庫回傳格式錯誤',
+      };
+    }
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: '查詢訂單成功',
+      data: validation.data,
+    };
+  } catch (error: any) {
+    console.error('查詢訂單時發生未預期錯誤:', error);
+    return {
+      success: false,
+      statusCode: 500,
+      message: error.message || '查詢訂單時發生未預期錯誤',
+    };
+  }
 }

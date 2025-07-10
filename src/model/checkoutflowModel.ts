@@ -42,6 +42,23 @@ export const orderDetailSchema = z.object({
 
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
 
+export const orderListItemSchema = z.object({
+  id: z.number(),
+  order_number: z.string(),
+  total_amount: z.number(), // numeric from DB is returned as string
+  status: z.string(), // This is order status
+  recipient_name: z.string(),
+  created_at: z.string(),
+  payments: z.array(
+    z.object({
+      status: z.string(), // This is payment status
+      payment_method: z.string(),
+    }),
+  ),
+});
+
+export type OrderListItem = z.infer<typeof orderListItemSchema>;
+
 export type PaymentUpdate = TablesUpdate<'payments'>;
 
 export enum OrderStatus {
